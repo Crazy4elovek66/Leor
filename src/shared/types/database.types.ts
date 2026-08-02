@@ -501,6 +501,12 @@ export interface Database {
         }
         Returns: Json
       }
+      get_discovery_feed: {
+        Args: {
+          p_limit?: number
+        }
+        Returns: Json
+      }
     }
     Enums: {
       visibility_level: 'PRIVATE' | 'CIRCLE' | 'SELECTED_CIRCLES' | 'PUBLIC'

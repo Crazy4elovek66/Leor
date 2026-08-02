@@ -147,6 +147,7 @@ npx vercel --prod
   - [PLAN_SPRINT_2B.md](docs/development/PLAN_SPRINT_2B.md) — План реализации Sprint 2B (Wishlist MVP)
   - [PLAN_SPRINT_3.md](docs/development/PLAN_SPRINT_3.md) — План реализации Sprint 3 (Gift Reservations MVP)
   - [PLAN_SPRINT_4.md](docs/development/PLAN_SPRINT_4.md) — План реализации Sprint 4 (Taste Graph MVP)
+  - [PLAN_SPRINT_5.md](docs/development/PLAN_SPRINT_5.md) — План реализации Sprint 5 (Gift Discovery Engine MVP)
   - [FOUNDATION_FREEZE.md](docs/development/FOUNDATION_FREEZE.md) — Официальная заморозка фундамента (Sprint 1.2)
   - [SPRINT_1_AUDIT.md](docs/development/SPRINT_1_AUDIT.md) — Полный технический аудит Sprint 1
   - [SPRINT_1.1_AUDIT.md](docs/development/SPRINT_1.1_AUDIT.md) — Полный технический аудит Sprint 1.1 (Hardening)
@@ -158,6 +159,8 @@ npx vercel --prod
   - [SPRINT_3_AUDIT.md](docs/development/SPRINT_3_AUDIT.md) — Полный технический аудит Sprint 3 (Gift Reservations MVP)
   - [SPRINT_3_2_AUDIT.md](docs/development/SPRINT_3_2_AUDIT.md) — Полный технический аудит Sprint 3.2 (UX Polish)
   - [SPRINT_4_AUDIT.md](docs/development/SPRINT_4_AUDIT.md) — Полный технический аудит Sprint 4 (Taste Graph MVP)
+  - [SPRINT_5_AUDIT.md](docs/development/SPRINT_5_AUDIT.md) — Полный технический аудит Sprint 5 (Gift Discovery Engine MVP)
+  - [SPRINT_5_1_AUDIT.md](docs/development/SPRINT_5_1_AUDIT.md) — Полный технический аудит Sprint 5.1 (Discovery Hardening)
 - **Дизайн**:
   - [DESIGN_GUIDELINES.md](docs/design/DESIGN_GUIDELINES.md) — Цветовая палитра `#0F0F10`, `#17171A`, `#D8B4B0` и типографика
 - **История изменений**:

@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## [5.1.0] - 2026-08-05 — Sprint 5.1 (Discovery Hardening)
+
+### Added & Hardened
+- **Recommendation Diversity & Circle Balance**: Enforced maximum candidate limits per category (max 3) and per owner (max 2) using PostgreSQL window functions.
+- **Freshness Boost**: Added dynamic score boost of up to +10% for wishes created in the last 14 days.
+- **Stable Ordering**: Guaranteed deterministic sorting using `score DESC`, `freshness_boost DESC`, `created_at DESC`.
+- **Explainability Optimization**: Limited `reasons` to max 3 unique, prioritized entries (Brand &rarr; Category &rarr; Taste Graph &rarr; Circle name).
+- **Performance Indexes**: Added `idx_wishes_user_status_created` and `idx_circle_members_user_circle` composite indexes.
+
+---
+
+## [5.0.0] - 2026-08-05 — Sprint 5 (Gift Discovery Engine MVP)
+
+### Added
+- **SQL Discovery Engine (`get_discovery_feed`)**: Created RPC function generating personalized gift recommendations by matching the user's Taste Graph against active wishlist items from circle peers.
+- **Scoring & Explanation Engine**: Implemented 0–100 match score formula combining node weight (50%), edge strength (30%), and wish priority (20%), alongside automated reasons generation.
+- **Discovery Module (`src/features/discovery/`)**: Built `DiscoveryCard`, `DiscoveryFeedView`, `useDiscoveryFeed` hook, and domain types.
+- **`/discover` Route & Bottom Navigation**: Added protected `/discover` route and active "Открытия" tab in `BottomNavigation.tsx`.
+
+---
+
 ## [4.1.0] - 2026-08-04 — Sprint 4.1 (Taste Graph Hardening)
 
 ### Added & Hardened
@@ -9,47 +30,3 @@ All notable changes to this project will be documented in this file.
 - **Dynamic Edge Strength Formula**: Calculated strength as `min(1.00, shared_occurrences * 0.25)`.
 - **UPSERT Edge Updates & Source Tracking**: Added `source_count` column to `taste_graph_edges` table and implemented `ON CONFLICT DO UPDATE` without deleting active edges.
 - **Graph Density Protection**: Enforced a hard limit of max 1000 edges per user, preserving only the highest strength edges.
-
----
-
-## [4.0.0] - 2026-08-04 — Sprint 4 (Taste Graph MVP)
-
-### Added
-- **Taste Graph Schema & ENUMs**: Created `taste_graph_nodes`, `taste_graph_edges` tables and `taste_node_type` ENUM (`BRAND`, `CATEGORY`, `STYLE`, `COLOR`, etc.).
-- **PL/pgSQL Weight Engine**: Implemented `calculate_taste_weight()` (range 0.00 – 1.00) and `rebuild_taste_graph()` procedures.
-- **Automated DB Triggers**: Added triggers on `wishes` and `taste_items` to automatically rebuild user graph upon changes.
-- **RPC `get_taste_graph`**: Created RLS-protected RPC returning nodes, edges, top categories, and top preferred brands.
-- **Frontend Module (`src/features/taste/`)**: Developed `TasteGraphView`, `TasteCategoryCloud`, `TasteBrandList`, `TasteStrengthBar`, and `useTasteGraph` hook. Integrated Taste Graph block into profile pages (`/profile` and `/profile/:id`).
-
----
-
-## [3.2.0] - 2026-08-03 — Sprint 3.2 (UX Polish)
-
-### Added & Improved
-- **Optimistic UI with Rollback**: Instant status transitions (`RESERVED_BY_ME`, `AVAILABLE`, `CONFIRMED`) with automatic state rollback on RPC failures.
-- **Loading & Skeleton States**: Added pulse skeletons, disabled button states, and `Loader2` spinners during pending RPC operations.
-- **Sonner Toast Copy**: Refined Russian toast messages for all reservation actions and error cases.
-- **Shared 1-Minute Timer (`useMinuteTimer`)**: Optimized timer updates to execute once every 60 seconds (60,000ms) for battery efficiency.
-- **Section-specific Empty States**: Added custom empty states on `/reservations` for Active Reservations, Confirmed Purchases, and History.
-- **Accessibility & Focus Styles**: Added `aria-label`, keyboard focus indicators, and contrast handling for disabled controls.
-
----
-
-## [3.0.0] - 2026-08-03 — Sprint 3 (Gift Reservations MVP)
-
-### Added
-- **Gift Reservations Module (`src/features/reservation/`)**: Created reservation types, RPC hooks (`useWishReservations`, `useMyReservations`), Realtime hook (`useReservationRealtime`), and `formatCountdown` utility.
-- **WishCard State Integration**: Integrated 4 reservation states (`AVAILABLE`, `RESERVED`, `RESERVED_BY_ME`, `CONFIRMED`) with dusty rose `#D8B4B0` styling for circle members while strictly keeping the card standard for the wishlist owner.
-- **Giver Dashboard (`/reservations`)**: Implemented `MyReservationsView` categorized into Active Reservations, Confirmed Purchases, and History.
-- **Timer Countdown**: Display remaining reservation time until 72h expiry (`71ч`, `18ч`, `43м`).
-
----
-
-## [3.1.0] - 2026-08-03 — Sprint 3.1 (Reservation Hardening)
-
-### Added & Hardened
-- **PostgreSQL Table `gift_reservations`**: Created reservation table with partial unique index `uq_active_gift_reservation` preventing duplicate active reservations.
-- **SQL View `wish_reservation_status`**: Aggregated view without `reserved_by` field for privacy preservation.
-- **Atomic RPC Functions**: `get_wish_reservation_state()`, `reserve_wish()`, `cancel_reservation()`, `confirm_reservation()`, and `expire_old_reservations()`.
-- **Strict RLS Policies**: Denies access to wishlist owners for their own gift reservations.
-- **Realtime Integration**: Target wish reservation state updates via `useReservationRealtime()`.

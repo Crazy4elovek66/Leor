@@ -1,4 +1,4 @@
-import { User, Gift, Users, Sparkles } from 'lucide-react';
+import { User, Users, Compass } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
@@ -8,9 +8,8 @@ export function BottomNavigation() {
 
   const navItems = [
     { key: 'profile', label: 'Профиль', icon: User, path: '/profile', active: location.pathname === '/profile' },
-    { key: 'wishes', label: 'Желания', icon: Gift, path: '/wishes', active: false, disabled: true },
     { key: 'circles', label: 'Круги', icon: Users, path: '/circles', active: location.pathname.startsWith('/circles'), disabled: false },
-    { key: 'memories', label: 'Память', icon: Sparkles, path: '/memories', active: false, disabled: true },
+    { key: 'discover', label: 'Открытия', icon: Compass, path: '/discover', active: location.pathname === '/discover', disabled: false },
   ];
 
   return (
