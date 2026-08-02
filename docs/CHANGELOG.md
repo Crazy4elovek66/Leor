@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.1] - 2026-08-02 — Sprint 2A.1 (Access Hardening)
+
+### Added & Hardened
+- **Archived Circle Access Protection**: Updated `public.check_circle_access()` with `JOIN public.circles c` enforcing `c.is_archived = false`. Archived circles immediately revoke access to all profile sections.
+- **CircleAccess RLS Ownership Validation**: Hardened `circle_accesses_insert_policy` and `circle_accesses_delete_policy` RLS rules ensuring a user can only grant or revoke section access for their own profile within circles where they are an active member.
+- **Index Verification**: Verified B-Tree indexes (`idx_circle_members_user`, `idx_circle_members_circle`, `idx_circle_accesses_profile`, `idx_circle_accesses_circle_section`, `idx_circles_owner`).
+
+---
+
+## [2.0.0] - 2026-08-02 — Sprint 2A (Social Graph)
+
+### Added
+- **PostgreSQL Tables & ENUMs**: Added `circles`, `circle_members`, `circle_accesses` tables and `circle_role` (`OWNER`, `MEMBER`), `profile_section` (`BASIC_INFO`, `INTERESTS`, `SIZES`, `WISHLIST`, `MEMORIES`) ENUMs.
+- **Automatic Owner Trigger**: Implemented `handle_circle_owner_member()` DB trigger for auto-inserting circle creator as `OWNER`.
+- **Deno Edge Function `circle-invite`**: Cryptographically secure Base62 10-char invite code generation, validation, and joining with replay/archive protection.
+- **`check_circle_access` RLS Function**: Activated full `EXISTS` check across `circle_accesses` and `circle_members`.
+- **Circles UI Module (`src/features/circle/`)**: Created `/circles`, `/circles/:id`, `/profile/:id` routes, `CircleList`, `CircleCard`, `CircleDetailsView`, `AccessMatrixModal`, and `MemberProfileView` components.
+
+---
+
 ## [1.2.0] - 2026-08-02 — Sprint 1.2 (Foundation Freeze)
 
 ### Added

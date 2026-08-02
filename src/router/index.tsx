@@ -5,6 +5,9 @@ import { RootLayout } from '@/layouts/RootLayout';
 import { OnboardingCarousel } from '@/features/auth/components/OnboardingCarousel';
 import { TelegramAuthGuard } from '@/features/auth/components/TelegramAuthGuard';
 import { GiftProfileView } from '@/features/profile/components/GiftProfileView';
+import { CircleList } from '@/features/circle/components/CircleList';
+import { CircleDetailsView } from '@/features/circle/components/CircleDetailsView';
+import { MemberProfileView } from '@/features/circle/components/MemberProfileView';
 
 export function AppRouter() {
   const navigate = useNavigate();
@@ -43,6 +46,33 @@ export function AppRouter() {
                   )}
                 </TelegramAuthGuard>
               )
+            }
+          />
+
+          <Route
+            path="/circles"
+            element={
+              <TelegramAuthGuard>
+                {({ userId }) => <CircleList currentUserId={userId} />}
+              </TelegramAuthGuard>
+            }
+          />
+
+          <Route
+            path="/circles/:id"
+            element={
+              <TelegramAuthGuard>
+                {({ userId }) => <CircleDetailsView currentUserId={userId} />}
+              </TelegramAuthGuard>
+            }
+          />
+
+          <Route
+            path="/profile/:id"
+            element={
+              <TelegramAuthGuard>
+                {() => <MemberProfileView />}
+              </TelegramAuthGuard>
             }
           />
         </Route>

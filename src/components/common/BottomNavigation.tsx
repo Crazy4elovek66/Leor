@@ -7,9 +7,9 @@ export function BottomNavigation() {
   const location = useLocation();
 
   const navItems = [
-    { key: 'profile', label: 'Профиль', icon: User, path: '/profile', active: location.pathname.startsWith('/profile') },
+    { key: 'profile', label: 'Профиль', icon: User, path: '/profile', active: location.pathname === '/profile' },
     { key: 'wishes', label: 'Желания', icon: Gift, path: '/wishes', active: false, disabled: true },
-    { key: 'circle', label: 'Круг', icon: Users, path: '/circle', active: false, disabled: true },
+    { key: 'circles', label: 'Круги', icon: Users, path: '/circles', active: location.pathname.startsWith('/circles'), disabled: false },
     { key: 'memories', label: 'Память', icon: Sparkles, path: '/memories', active: false, disabled: true },
   ];
 

@@ -163,8 +163,86 @@ export interface Database {
         }
         Update: {
           id?: string
+          profile_id?: string
+          title?: string
+          created_at?: string
+        }
+      }
+      circles: {
+        Row: {
+          id: string
+          name: string
+          avatar_url: string | null
+          owner_id: string
+          invite_code: string
+          is_archived: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          avatar_url?: string | null
+          owner_id: string
+          invite_code: string
+          is_archived?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          avatar_url?: string | null
+          owner_id?: string
+          invite_code?: string
+          is_archived?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      circle_members: {
+        Row: {
+          id: string
+          circle_id: string
+          user_id: string
+          role: Database['public']['Enums']['circle_role']
+          joined_at: string
+        }
+        Insert: {
+          id?: string
+          circle_id: string
+          user_id: string
+          role?: Database['public']['Enums']['circle_role']
+          joined_at?: string
+        }
+        Update: {
+          id?: string
+          circle_id?: string
+          user_id?: string
+          role?: Database['public']['Enums']['circle_role']
+          joined_at?: string
+        }
+      }
+      circle_accesses: {
+        Row: {
+          id: string
+          circle_id: string
           profile_id: string
-          title: string
+          section: Database['public']['Enums']['profile_section']
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          circle_id: string
+          profile_id: string
+          section: Database['public']['Enums']['profile_section']
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          circle_id?: string
+          profile_id?: string
+          section?: Database['public']['Enums']['profile_section']
           created_at?: string
         }
       }
@@ -192,14 +270,14 @@ export interface Database {
       can_view_profile: {
         Args: {
           p_profile_id: string
-          p_section?: string | null
+          p_section?: Database['public']['Enums']['profile_section'] | null
         }
         Returns: boolean
       }
       check_circle_access: {
         Args: {
           p_profile_id: string
-          p_section?: string | null
+          p_section?: Database['public']['Enums']['profile_section'] | null
         }
         Returns: boolean
       }
@@ -208,6 +286,8 @@ export interface Database {
       visibility_level: 'PRIVATE' | 'CIRCLE' | 'SELECTED_CIRCLES' | 'PUBLIC'
       size_category: 'CLOTHING_TOP' | 'CLOTHING_BOTTOM' | 'SHOES' | 'RING' | 'BRACELET' | 'NECKLACE'
       taste_category: 'MOVIES' | 'BOOKS' | 'GAMES' | 'MUSIC' | 'TRAVEL' | 'STYLE' | 'HOME' | 'FOOD' | 'SPORT' | 'HOBBY' | 'BRANDS'
+      circle_role: 'OWNER' | 'MEMBER'
+      profile_section: 'BASIC_INFO' | 'INTERESTS' | 'SIZES' | 'WISHLIST' | 'MEMORIES'
     }
   }
 }
