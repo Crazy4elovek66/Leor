@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --background: 15 15 16;
+    --card: 23 23 26;
+    --border: 38 38 43;
+    --accent: 216 180 176;
+    --text-primary: 245 245 247;
+    --text-secondary: 161 161 170;
+  }
+  
+  body {
+    background-color: #0F0F10;
+    color: #F5F5F7;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* Custom scrollbar for dark theme */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0F0F10;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #26262B;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #D8B4B0;
+}
