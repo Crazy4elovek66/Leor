@@ -349,6 +349,67 @@ export interface Database {
           updated_at?: string
         }
       }
+      taste_graph_nodes: {
+        Row: {
+          id: string
+          user_id: string
+          node_type: Database['public']['Enums']['taste_node_type']
+          value: string
+          weight: number
+          source: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          node_type: Database['public']['Enums']['taste_node_type']
+          value: string
+          weight?: number
+          source?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          node_type?: Database['public']['Enums']['taste_node_type']
+          value?: string
+          weight?: number
+          source?: string
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      taste_graph_edges: {
+        Row: {
+          id: string
+          user_id: string
+          from_node_id: string
+          to_node_id: string
+          strength: number
+          source_count: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          from_node_id: string
+          to_node_id: string
+          strength?: number
+          source_count?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          from_node_id?: string
+          to_node_id?: string
+          strength?: number
+          source_count?: number
+          created_at?: string
+        }
+      }
     }
     Views: {
       gift_profile_public: {
@@ -420,6 +481,26 @@ export interface Database {
         Args: Record<string, never>
         Returns: number
       }
+      calculate_taste_weight: {
+        Args: {
+          p_user_id: string
+          p_node_type: Database['public']['Enums']['taste_node_type']
+          p_value: string
+        }
+        Returns: number
+      }
+      rebuild_taste_graph: {
+        Args: {
+          p_user_id: string
+        }
+        Returns: void
+      }
+      get_taste_graph: {
+        Args: {
+          p_profile_id: string
+        }
+        Returns: Json
+      }
     }
     Enums: {
       visibility_level: 'PRIVATE' | 'CIRCLE' | 'SELECTED_CIRCLES' | 'PUBLIC'
@@ -433,6 +514,7 @@ export interface Database {
       wish_source: 'MANUAL' | 'LINK' | 'IMPORT'
       wish_context: 'BIRTHDAY' | 'NEW_YEAR' | 'ANNIVERSARY' | 'JUST_WANT' | 'SOMEDAY' | 'OTHER'
       gift_reservation_status: 'RESERVED' | 'CONFIRMED' | 'CANCELLED' | 'EXPIRED'
+      taste_node_type: 'BRAND' | 'CATEGORY' | 'STYLE' | 'COLOR' | 'MATERIAL' | 'HOBBY' | 'BOOK' | 'MOVIE' | 'GAME' | 'MUSIC' | 'TRAVEL' | 'FOOD' | 'CREATOR' | 'OTHER'
     }
   }
 }

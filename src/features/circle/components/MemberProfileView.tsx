@@ -10,6 +10,7 @@ import { useMemberWishlist } from '@/features/wishlist/hooks/useMemberWishlist';
 import { useWishReservations } from '@/features/reservation/hooks/useWishReservations';
 import { WishlistGrid } from '@/features/wishlist/components/WishlistGrid';
 import { WishDetailsModal } from '@/features/wishlist/components/WishDetailsModal';
+import { TasteGraphView } from '@/features/taste/components/TasteGraphView';
 import { resolveWishSize } from '@/features/wishlist/utils/resolveWishSize';
 import type { WishItem } from '@/features/wishlist/types';
 import { formatDate } from '@/lib/utils';
@@ -156,6 +157,9 @@ export function MemberProfileView() {
           </Card>
         )}
       </div>
+
+      {/* Taste Graph Section */}
+      {profileId && <TasteGraphView profileId={profileId} />}
 
       {/* Sizes Section */}
       <div className="space-y-3">
