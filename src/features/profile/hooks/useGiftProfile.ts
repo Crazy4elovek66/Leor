@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { fromTable } from '@/api/supabase';
+import { supabase, fromTable } from '@/api/supabase';
 import type { FullGiftProfile, ProfileSizeItem, TasteItem, TasteCategory } from '../types';
 
 export function useGiftProfile(userId?: string, profileId?: string) {
@@ -40,6 +40,28 @@ export function useGiftProfile(userId?: string, profileId?: string) {
         .select('*')
         .eq('profile_id', profileId);
 
+      // 5. Fetch Profile Completeness % from SQL Function (calculate_profile_completeness)
+      let completenessScore = 0;
+      const { data: rpcScore, error: rpcError } = await (supabase.rpc as any)('calculate_profile_completeness', {
+        p_profile_id: profileId,
+      });
+
+      if (!rpcError && typeof rpcScore === 'number') {
+        completenessScore = rpcScore;
+      } else {
+        // Client fallback calculation if rpc is not available locally
+        let score = 0;
+        if (dbUser.first_name) score += 10;
+        if (dbProfile.bio) score += 10;
+        if (dbProfile.birth_date) score += 10;
+        if (dbProfile.city) score += 10;
+        if ((dbTastes || []).length >= 1) score += 15;
+        if ((dbTastes || []).length >= 3) score += 15;
+        if ((dbSizes || []).length >= 1) score += 15;
+        if ((dbSizes || []).length >= 3) score += 15;
+        completenessScore = Math.min(100, score);
+      }
+
       const sizes: ProfileSizeItem[] = (dbSizes || []).map((s: any) => ({
         id: s.id,
         category: s.category as any,
@@ -53,17 +75,6 @@ export function useGiftProfile(userId?: string, profileId?: string) {
         title: t.title,
         weight: t.weight,
       }));
-
-      // Calculate completeness %
-      let score = 0;
-      if (dbUser.first_name) score += 10;
-      if (dbProfile.bio) score += 10;
-      if (dbProfile.birth_date) score += 10;
-      if (dbProfile.city) score += 10;
-      if (tastes.length >= 1) score += 15;
-      if (tastes.length >= 3) score += 15;
-      if (sizes.length >= 1) score += 15;
-      if (sizes.length >= 3) score += 15;
 
       setProfile({
         id: dbProfile.id,
@@ -81,7 +92,7 @@ export function useGiftProfile(userId?: string, profileId?: string) {
         },
         sizes,
         tastes,
-        completeness: Math.min(100, score),
+        completeness: completenessScore,
       });
     } catch (err: any) {
       console.error('Failed to load GiftProfile:', err);

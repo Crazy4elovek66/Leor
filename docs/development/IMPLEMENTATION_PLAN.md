@@ -245,5 +245,28 @@ Leor/
 
 ---
 
-### Статус: Готово к реализации Sprint 1
-План полностью утвержден и готов к пошаговому выполнению.
+### Статус: Реализованы Sprint 1 (Foundation) и Sprint 1.1 (Hardening)
+
+---
+
+## 11. Sprint 1.1 (Hardening) — Укрепление фундамента
+
+### 11.1. PostgreSQL ENUM Types
+- `visibility_level`: `'PRIVATE'`, `'CIRCLE'`, `'SELECTED_CIRCLES'`, `'PUBLIC'`
+- `size_category`: `'CLOTHING_TOP'`, `'CLOTHING_BOTTOM'`, `'SHOES'`, `'RING'`, `'BRACELET'`, `'NECKLACE'`
+- `taste_category`: `'MOVIES'`, `'BOOKS'`, `'GAMES'`, `'MUSIC'`, `'TRAVEL'`, `'STYLE'`, `'HOME'`, `'FOOD'`, `'SPORT'`, `'HOBBY'`, `'BRANDS'`
+
+### 11.2. CHECK Constraints
+- `length(bio) <= 500` в `gift_profiles`
+- `length(city) <= 100` в `gift_profiles`
+- `length(value) <= 100` в `profile_sizes`
+- `weight > 0.0` в `taste_items`
+
+### 11.3. updated_at Triggers & PL/pgSQL Functions
+- `set_updated_at()` триггерная функция для автоматического обновления `updated_at`.
+- `can_view_profile(p_profile_id UUID)` RLS функция фундамента для системы Кругов (Circle Access).
+- `calculate_profile_completeness(p_profile_id UUID)` функция прямого расчета процента заполненности профиля в базе данных.
+
+### 11.4. Telegram Auth Security
+- `auth_date` проверкa replay-атак (максимальный TTL = 86400 с).
+- Защита `TELEGRAM_BOT_TOKEN` — используется исключительно в бессерверных Edge Functions на Deno.

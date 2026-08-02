@@ -74,25 +74,25 @@ export interface Database {
         Row: {
           id: string
           profile_id: string
-          category: string
+          category: Database['public']['Enums']['size_category']
           value: string
-          visibility: string
+          visibility: Database['public']['Enums']['visibility_level']
           created_at: string
         }
         Insert: {
           id?: string
           profile_id: string
-          category: string
+          category: Database['public']['Enums']['size_category']
           value: string
-          visibility?: string
+          visibility?: Database['public']['Enums']['visibility_level']
           created_at?: string
         }
         Update: {
           id?: string
           profile_id?: string
-          category?: string
+          category?: Database['public']['Enums']['size_category']
           value?: string
-          visibility?: string
+          visibility?: Database['public']['Enums']['visibility_level']
           created_at?: string
         }
       }
@@ -100,7 +100,7 @@ export interface Database {
         Row: {
           id: string
           profile_id: string
-          category: string
+          category: Database['public']['Enums']['taste_category']
           title: string
           weight: number
           created_at: string
@@ -109,7 +109,7 @@ export interface Database {
         Insert: {
           id?: string
           profile_id: string
-          category: string
+          category: Database['public']['Enums']['taste_category']
           title: string
           weight?: number
           created_at?: string
@@ -118,7 +118,7 @@ export interface Database {
         Update: {
           id?: string
           profile_id?: string
-          category?: string
+          category?: Database['public']['Enums']['taste_category']
           title?: string
           weight?: number
           created_at?: string
@@ -163,20 +163,51 @@ export interface Database {
         }
         Update: {
           id?: string
-          profile_id?: string
-          title?: string
+          profile_id: string
+          title: string
           created_at?: string
         }
       }
     }
     Views: {
-      [_ in never]: never
+      gift_profile_public: {
+        Row: {
+          profile_id: string
+          user_id: string
+          first_name: string
+          avatar_url: string | null
+          bio: string | null
+          city: string | null
+          birth_date: string | null
+        }
+      }
     }
     Functions: {
-      [_ in never]: never
+      calculate_profile_completeness: {
+        Args: {
+          p_profile_id: string
+        }
+        Returns: number
+      }
+      can_view_profile: {
+        Args: {
+          p_profile_id: string
+          p_section?: string | null
+        }
+        Returns: boolean
+      }
+      check_circle_access: {
+        Args: {
+          p_profile_id: string
+          p_section?: string | null
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      visibility_level: 'PRIVATE' | 'CIRCLE' | 'SELECTED_CIRCLES' | 'PUBLIC'
+      size_category: 'CLOTHING_TOP' | 'CLOTHING_BOTTOM' | 'SHOES' | 'RING' | 'BRACELET' | 'NECKLACE'
+      taste_category: 'MOVIES' | 'BOOKS' | 'GAMES' | 'MUSIC' | 'TRAVEL' | 'STYLE' | 'HOME' | 'FOOD' | 'SPORT' | 'HOBBY' | 'BRANDS'
     }
   }
 }

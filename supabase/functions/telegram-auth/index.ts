@@ -1,5 +1,5 @@
 // Deno Edge Function: telegram-auth
-// Validates Telegram WebApp initData HMAC signature & upserts user and gift_profile
+// Validates Telegram WebApp initData HMAC signature & auth_date replay protection, upserts user & gift_profile
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.48.1";
@@ -18,12 +18,32 @@ interface TelegramUser {
   language_code?: string;
 }
 
-// HMAC-SHA256 Validation Function for Telegram initData
-async function validateTelegramInitData(initDataStr: string, botToken: string): Promise<{ isValid: boolean; user?: TelegramUser }> {
+const MAX_AUTH_AGE_SECONDS = 86400; // 24 hours TTL for Telegram WebApp initData
+
+async function validateTelegramInitData(
+  initDataStr: string,
+  botToken: string
+): Promise<{ isValid: boolean; reason?: string; user?: TelegramUser }> {
   try {
-    const urlParams = new URLSearchParams(initDataStr);
+    const cleanInitData = initDataStr.trim();
+    const urlParams = new URLSearchParams(cleanInitData);
     const hash = urlParams.get("hash");
-    if (!hash) return { isValid: false };
+    if (!hash) return { isValid: false, reason: "Missing hash parameter" };
+
+    // Replay attack prevention: check auth_date
+    const authDateStr = urlParams.get("auth_date");
+    if (!authDateStr) return { isValid: false, reason: "Missing auth_date" };
+    
+    const authDate = parseInt(authDateStr, 10);
+    const now = Math.floor(Date.now() / 1000);
+    
+    if (isNaN(authDate)) return { isValid: false, reason: "Invalid auth_date format" };
+    if (now - authDate > MAX_AUTH_AGE_SECONDS) {
+      return { isValid: false, reason: "Session expired (replay attack protection)" };
+    }
+    if (authDate > now + 300) {
+      return { isValid: false, reason: "auth_date is in the future" };
+    }
 
     urlParams.delete("hash");
 
@@ -69,54 +89,51 @@ async function validateTelegramInitData(initDataStr: string, botToken: string): 
       .join("");
 
     if (calculatedHash !== hash) {
-      return { isValid: false };
+      return { isValid: false, reason: "HMAC signature mismatch" };
     }
 
     const userStr = urlParams.get("user");
-    if (!userStr) return { isValid: false };
+    if (!userStr) return { isValid: false, reason: "Missing user payload" };
     const user: TelegramUser = JSON.parse(userStr);
 
     return { isValid: true, user };
-  } catch (err) {
-    console.error("HMAC Validation error:", err);
-    return { isValid: false };
+  } catch (err: any) {
+    console.error("HMAC Validation exception");
+    return { isValid: false, reason: "Validation error" };
   }
 }
 
 serve(async (req) => {
-  // Handle CORS preflight
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
 
   try {
     const { initData } = await req.json();
-    if (!initData) {
-      return new Response(JSON.stringify({ error: "Missing initData" }), {
+    if (!initData || typeof initData !== "string") {
+      return new Response(JSON.stringify({ error: "Missing or invalid initData" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
     const botToken = Deno.env.get("TELEGRAM_BOT_TOKEN");
-    if (!botToken) {
-      // In dev mode without TELEGRAM_BOT_TOKEN, return fallback or error
-      console.warn("TELEGRAM_BOT_TOKEN is not set in environment");
-    }
-
     let telegramUser: TelegramUser | undefined;
 
     if (botToken) {
       const validation = await validateTelegramInitData(initData, botToken);
       if (!validation.isValid || !validation.user) {
-        return new Response(JSON.stringify({ error: "Invalid Telegram signature" }), {
-          status: 401,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        return new Response(
+          JSON.stringify({ error: validation.reason || "Invalid Telegram signature" }),
+          {
+            status: 401,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          }
+        );
       }
       telegramUser = validation.user;
     } else {
-      // Fallback for dev mode parse without HMAC check
+      console.warn("TELEGRAM_BOT_TOKEN environment variable is not configured. Running fallback mode.");
       const urlParams = new URLSearchParams(initData);
       const userStr = urlParams.get("user");
       if (userStr) {

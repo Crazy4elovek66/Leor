@@ -142,7 +142,11 @@ npx vercel --prod
   - [AGENTS.md](docs/development/AGENTS.md) — Правила и стандарты AI-агентов
   - [TECH_SPEC.md](docs/development/TECH_SPEC.md) — Техническая спецификация
   - [SECURITY_CHECKLIST.md](docs/development/SECURITY_CHECKLIST.md) — Чек-лист безопасности и секретов
-  - [IMPLEMENTATION_PLAN.md](docs/development/IMPLEMENTATION_PLAN.md) — План реализации Sprint 1
+  - [IMPLEMENTATION_PLAN.md](docs/development/IMPLEMENTATION_PLAN.md) — План реализации Sprint 1 & 1.1
+  - [FOUNDATION_FREEZE.md](docs/development/FOUNDATION_FREEZE.md) — Официальная заморозка фундамента (Sprint 1.2)
+  - [SPRINT_1_AUDIT.md](docs/development/SPRINT_1_AUDIT.md) — Полный технический аудит Sprint 1
+  - [SPRINT_1.1_AUDIT.md](docs/development/SPRINT_1.1_AUDIT.md) — Полный технический аудит Sprint 1.1 (Hardening)
+  - [SPRINT_1.2_AUDIT.md](docs/development/SPRINT_1.2_AUDIT.md) — Полный технический аудит Sprint 1.2 (Foundation Freeze)
 - **Дизайн**:
   - [DESIGN_GUIDELINES.md](docs/design/DESIGN_GUIDELINES.md) — Цветовая палитра `#0F0F10`, `#17171A`, `#D8B4B0` и типографика
 - **История изменений**:
