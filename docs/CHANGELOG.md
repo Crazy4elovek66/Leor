@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.0] - 2026-08-02 — Sprint 2B (Wishlist MVP / Gift Card)
+
+### Added
+- **Wishlist Schema & ENUMs**: Defined `wishes` table and ENUMs (`wish_category` with `EXPERIENCE`, `wish_priority`, `wish_status`, `wish_source`, `wish_context`).
+- **Brand & Surprise Fields**: Added `brand`, `is_surprise_friendly`, and `source_type` columns.
+- **Supabase Storage `wish-images`**: Added public image bucket for wish covers.
+- **Size Resolution Helper**: Created `resolveWishSize(category, profile_sizes, override)` helper.
+- **RLS Policy Protection**: Integrated `wishes_select_policy` with `can_view_profile(gp.id, 'WISHLIST')`.
+
+---
+
 ## [2.0.1] - 2026-08-02 — Sprint 2A.1 (Access Hardening)
 
 ### Added & Hardened

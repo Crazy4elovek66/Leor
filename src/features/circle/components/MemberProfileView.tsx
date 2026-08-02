@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Avatar } from '@/components/ui/avatar';
@@ -5,13 +6,20 @@ import { Button } from '@/components/ui/button';
 import { InterestsGrid } from '@/features/profile/components/InterestsGrid';
 import { SizesSection } from '@/features/profile/components/SizesSection';
 import { useMemberProfile } from '../hooks/useMemberProfile';
+import { useMemberWishlist } from '@/features/wishlist/hooks/useMemberWishlist';
+import { WishlistGrid } from '@/features/wishlist/components/WishlistGrid';
+import { WishDetailsModal } from '@/features/wishlist/components/WishDetailsModal';
+import { resolveWishSize } from '@/features/wishlist/utils/resolveWishSize';
+import type { WishItem } from '@/features/wishlist/types';
 import { formatDate } from '@/lib/utils';
-import { ChevronLeft, MapPin, Calendar, Lock, Heart, Shirt } from 'lucide-react';
+import { ChevronLeft, MapPin, Calendar, Lock, Heart, Shirt, Gift } from 'lucide-react';
 
 export function MemberProfileView() {
   const { id: profileId } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { profile, isLoading, error } = useMemberProfile(profileId);
+  const { wishes } = useMemberWishlist(profile?.user.id);
+  const [selectedWish, setSelectedWish] = useState<WishItem | null>(null);
 
   if (isLoading) {
     return (
@@ -100,6 +108,28 @@ export function MemberProfileView() {
         )}
       </Card>
 
+      {/* Wishlist Section */}
+      <div className="space-y-3">
+        <div className="flex items-center space-x-2 px-1">
+          <Gift className="w-4 h-4 text-[#D8B4B0]" />
+          <h3 className="text-sm font-semibold text-[#F5F5F7]">Карточки желаний</h3>
+        </div>
+
+        {wishes.length > 0 ? (
+          <WishlistGrid
+            wishes={wishes}
+            profileSizes={sizes}
+            onSelectWish={(w) => setSelectedWish(w)}
+            isReadOnly
+          />
+        ) : (
+          <Card className="p-5 text-center bg-[#17171A] border-[#26262B]/60">
+            <Lock className="w-4 h-4 text-[#71717A] mx-auto mb-1.5" />
+            <p className="text-xs text-[#A1A1AA]">Раздел желаний скрыт настройками приватности или пуст</p>
+          </Card>
+        )}
+      </div>
+
       {/* Interests Section */}
       <div className="space-y-3">
         <div className="flex items-center space-x-2 px-1">
@@ -135,6 +165,15 @@ export function MemberProfileView() {
           </Card>
         )}
       </div>
+
+      {/* Modal for viewing wish details */}
+      <WishDetailsModal
+        isOpen={!!selectedWish}
+        onClose={() => setSelectedWish(null)}
+        wish={selectedWish}
+        resolvedSize={selectedWish ? resolveWishSize(selectedWish.category, sizes, selectedWish.sizeOverride) : null}
+        isReadOnly
+      />
     </div>
   );
 }

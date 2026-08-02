@@ -246,6 +246,71 @@ export interface Database {
           created_at?: string
         }
       }
+      wishes: {
+        Row: {
+          id: string
+          user_id: string
+          title: string
+          description: string | null
+          brand: string | null
+          image_url: string | null
+          link: string | null
+          price: number | null
+          currency: string
+          category: Database['public']['Enums']['wish_category']
+          priority: Database['public']['Enums']['wish_priority']
+          visibility: Database['public']['Enums']['visibility_level']
+          status: Database['public']['Enums']['wish_status']
+          source_type: Database['public']['Enums']['wish_source']
+          context: Database['public']['Enums']['wish_context']
+          is_surprise_friendly: boolean
+          size_override: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          title: string
+          description?: string | null
+          brand?: string | null
+          image_url?: string | null
+          link?: string | null
+          price?: number | null
+          currency?: string
+          category?: Database['public']['Enums']['wish_category']
+          priority?: Database['public']['Enums']['wish_priority']
+          visibility?: Database['public']['Enums']['visibility_level']
+          status?: Database['public']['Enums']['wish_status']
+          source_type?: Database['public']['Enums']['wish_source']
+          context?: Database['public']['Enums']['wish_context']
+          is_surprise_friendly?: boolean
+          size_override?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          title?: string
+          description?: string | null
+          brand?: string | null
+          image_url?: string | null
+          link?: string | null
+          price?: number | null
+          currency?: string
+          category?: Database['public']['Enums']['wish_category']
+          priority?: Database['public']['Enums']['wish_priority']
+          visibility?: Database['public']['Enums']['visibility_level']
+          status?: Database['public']['Enums']['wish_status']
+          source_type?: Database['public']['Enums']['wish_source']
+          context?: Database['public']['Enums']['wish_context']
+          is_surprise_friendly?: boolean
+          size_override?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
     }
     Views: {
       gift_profile_public: {
@@ -288,6 +353,11 @@ export interface Database {
       taste_category: 'MOVIES' | 'BOOKS' | 'GAMES' | 'MUSIC' | 'TRAVEL' | 'STYLE' | 'HOME' | 'FOOD' | 'SPORT' | 'HOBBY' | 'BRANDS'
       circle_role: 'OWNER' | 'MEMBER'
       profile_section: 'BASIC_INFO' | 'INTERESTS' | 'SIZES' | 'WISHLIST' | 'MEMORIES'
+      wish_category: 'TECH' | 'BOOKS' | 'CLOTHING' | 'BEAUTY' | 'HOME' | 'HOBBY' | 'FOOD' | 'TRAVEL' | 'EXPERIENCE' | 'OTHER'
+      wish_priority: 'LOW' | 'MEDIUM' | 'HIGH'
+      wish_status: 'ACTIVE' | 'ARCHIVED'
+      wish_source: 'MANUAL' | 'LINK' | 'IMPORT'
+      wish_context: 'BIRTHDAY' | 'NEW_YEAR' | 'ANNIVERSARY' | 'JUST_WANT' | 'SOMEDAY' | 'OTHER'
     }
   }
 }

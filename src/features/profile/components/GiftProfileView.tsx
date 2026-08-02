@@ -7,8 +7,14 @@ import { InterestsGrid } from './InterestsGrid';
 import { SizesSection } from './SizesSection';
 import { EditProfileModal } from './EditProfileModal';
 import { useGiftProfile } from '../hooks/useGiftProfile';
+import { useWishlist } from '@/features/wishlist/hooks/useWishlist';
+import { WishlistGrid } from '@/features/wishlist/components/WishlistGrid';
+import { CreateWishModal } from '@/features/wishlist/components/CreateWishModal';
+import { WishDetailsModal } from '@/features/wishlist/components/WishDetailsModal';
+import { resolveWishSize } from '@/features/wishlist/utils/resolveWishSize';
+import type { WishItem } from '@/features/wishlist/types';
 import { formatDate } from '@/lib/utils';
-import { Edit3, MapPin, Calendar, Sparkles, Shirt, Heart } from 'lucide-react';
+import { Edit3, MapPin, Calendar, Sparkles, Shirt, Heart, Gift, Plus } from 'lucide-react';
 
 interface GiftProfileViewProps {
   userId: string;
@@ -20,7 +26,11 @@ export function GiftProfileView({ userId, profileId }: GiftProfileViewProps) {
     userId,
     profileId
   );
+  const { wishes, uploadWishImage, createWish, archiveWish, deleteWish } = useWishlist(userId);
+
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isCreateWishOpen, setIsCreateWishOpen] = useState(false);
+  const [selectedWish, setSelectedWish] = useState<WishItem | null>(null);
 
   if (isLoading) {
     return (
@@ -46,6 +56,7 @@ export function GiftProfileView({ userId, profileId }: GiftProfileViewProps) {
   }
 
   const { user, bio, city, birthDate, completeness, tastes, sizes } = profile;
+  const activeWishes = wishes.filter((w) => w.status === 'ACTIVE');
 
   return (
     <div className="space-y-6 pb-8">
@@ -111,6 +122,42 @@ export function GiftProfileView({ userId, profileId }: GiftProfileViewProps) {
         onOptimize={() => setIsEditModalOpen(true)}
       />
 
+      {/* Wishlist Section */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between px-1">
+          <div className="flex items-center space-x-2">
+            <Gift className="w-4 h-4 text-[#D8B4B0]" />
+            <h3 className="text-sm font-semibold text-[#F5F5F7]">Мой Wishlist</h3>
+          </div>
+
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => setIsCreateWishOpen(true)}
+            className="rounded-full px-3 text-xs"
+          >
+            <Plus className="w-3.5 h-3.5 mr-1" />
+            Добавить
+          </Button>
+        </div>
+
+        {activeWishes.length > 0 ? (
+          <WishlistGrid
+            wishes={activeWishes}
+            profileSizes={sizes}
+            onSelectWish={(w) => setSelectedWish(w)}
+          />
+        ) : (
+          <Card className="p-6 text-center bg-[#17171A] border-[#26262B]">
+            <p className="text-xs text-[#A1A1AA] mb-3">Ваш список желаний пока пуст</p>
+            <Button variant="secondary" size="sm" onClick={() => setIsCreateWishOpen(true)}>
+              <Plus className="w-3.5 h-3.5 mr-1.5 text-[#D8B4B0]" />
+              Добавить первое желание
+            </Button>
+          </Card>
+        )}
+      </div>
+
       {/* Interests Section */}
       <div className="space-y-3">
         <div className="flex items-center justify-between px-1">
@@ -172,7 +219,7 @@ export function GiftProfileView({ userId, profileId }: GiftProfileViewProps) {
         )}
       </div>
 
-      {/* Modal for editing profile */}
+      {/* Modals */}
       <EditProfileModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
@@ -180,6 +227,25 @@ export function GiftProfileView({ userId, profileId }: GiftProfileViewProps) {
         onUpdateBaseProfile={updateBaseProfile}
         onToggleInterest={toggleInterest}
         onSaveSize={setSize}
+      />
+
+      <CreateWishModal
+        isOpen={isCreateWishOpen}
+        onClose={() => setIsCreateWishOpen(false)}
+        onSubmit={async (payload) => {
+          await createWish(payload);
+        }}
+        onUploadImage={uploadWishImage}
+      />
+
+      <WishDetailsModal
+        isOpen={!!selectedWish}
+        onClose={() => setSelectedWish(null)}
+        wish={selectedWish}
+        resolvedSize={selectedWish ? resolveWishSize(selectedWish.category, sizes, selectedWish.sizeOverride) : null}
+        isOwner
+        onArchive={archiveWish}
+        onDelete={deleteWish}
       />
     </div>
   );
