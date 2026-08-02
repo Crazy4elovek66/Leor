@@ -8,6 +8,7 @@ import { GiftProfileView } from '@/features/profile/components/GiftProfileView';
 import { CircleList } from '@/features/circle/components/CircleList';
 import { CircleDetailsView } from '@/features/circle/components/CircleDetailsView';
 import { MemberProfileView } from '@/features/circle/components/MemberProfileView';
+import { MyReservationsView } from '@/features/reservation/components/MyReservationsView';
 
 export function AppRouter() {
   const navigate = useNavigate();
@@ -72,6 +73,15 @@ export function AppRouter() {
             element={
               <TelegramAuthGuard>
                 {() => <MemberProfileView />}
+              </TelegramAuthGuard>
+            }
+          />
+
+          <Route
+            path="/reservations"
+            element={
+              <TelegramAuthGuard>
+                {({ userId }) => <MyReservationsView currentUserId={userId} />}
               </TelegramAuthGuard>
             }
           />

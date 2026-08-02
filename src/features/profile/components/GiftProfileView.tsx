@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Avatar } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -14,7 +15,7 @@ import { WishDetailsModal } from '@/features/wishlist/components/WishDetailsModa
 import { resolveWishSize } from '@/features/wishlist/utils/resolveWishSize';
 import type { WishItem } from '@/features/wishlist/types';
 import { formatDate } from '@/lib/utils';
-import { Edit3, MapPin, Calendar, Sparkles, Shirt, Heart, Gift, Plus } from 'lucide-react';
+import { Edit3, MapPin, Calendar, Sparkles, Shirt, Heart, Gift, Plus, BookmarkCheck } from 'lucide-react';
 
 interface GiftProfileViewProps {
   userId: string;
@@ -22,6 +23,7 @@ interface GiftProfileViewProps {
 }
 
 export function GiftProfileView({ userId, profileId }: GiftProfileViewProps) {
+  const navigate = useNavigate();
   const { profile, isLoading, error, updateBaseProfile, toggleInterest, setSize } = useGiftProfile(
     userId,
     profileId
@@ -75,15 +77,26 @@ export function GiftProfileView({ userId, profileId }: GiftProfileViewProps) {
             </div>
           </div>
 
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setIsEditModalOpen(true)}
-            className="rounded-full px-3 text-xs"
-          >
-            <Edit3 className="w-3.5 h-3.5 mr-1.5 text-[#D8B4B0]" />
-            Редактировать
-          </Button>
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate('/reservations')}
+              className="rounded-full px-3 text-xs"
+            >
+              <BookmarkCheck className="w-3.5 h-3.5 mr-1 text-[#D8B4B0]" />
+              Мои брони
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsEditModalOpen(true)}
+              className="rounded-full px-3 text-xs"
+            >
+              <Edit3 className="w-3.5 h-3.5 mr-1.5 text-[#D8B4B0]" />
+              Редактировать
+            </Button>
+          </div>
         </div>
 
         {/* Bio section */}
@@ -146,6 +159,7 @@ export function GiftProfileView({ userId, profileId }: GiftProfileViewProps) {
             wishes={activeWishes}
             profileSizes={sizes}
             onSelectWish={(w) => setSelectedWish(w)}
+            isOwner={true}
           />
         ) : (
           <Card className="p-6 text-center bg-[#17171A] border-[#26262B]">

@@ -311,6 +311,44 @@ export interface Database {
           updated_at?: string
         }
       }
+      gift_reservations: {
+        Row: {
+          id: string
+          wish_id: string
+          reserved_by: string
+          status: Database['public']['Enums']['gift_reservation_status']
+          reserved_at: string
+          confirmed_at: string | null
+          cancelled_at: string | null
+          expires_at: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          wish_id: string
+          reserved_by: string
+          status?: Database['public']['Enums']['gift_reservation_status']
+          reserved_at?: string
+          confirmed_at?: string | null
+          cancelled_at?: string | null
+          expires_at?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          wish_id?: string
+          reserved_by?: string
+          status?: Database['public']['Enums']['gift_reservation_status']
+          reserved_at?: string
+          confirmed_at?: string | null
+          cancelled_at?: string | null
+          expires_at?: string
+          created_at?: string
+          updated_at?: string
+        }
+      }
     }
     Views: {
       gift_profile_public: {
@@ -322,6 +360,14 @@ export interface Database {
           bio: string | null
           city: string | null
           birth_date: string | null
+        }
+      }
+      wish_reservation_status: {
+        Row: {
+          wish_id: string
+          has_reservation: boolean
+          is_confirmed: boolean
+          expires_at: string
         }
       }
     }
@@ -346,6 +392,34 @@ export interface Database {
         }
         Returns: boolean
       }
+      get_wish_reservation_state: {
+        Args: {
+          p_wish_id: string
+        }
+        Returns: string
+      }
+      reserve_wish: {
+        Args: {
+          p_wish_id: string
+        }
+        Returns: Json
+      }
+      cancel_reservation: {
+        Args: {
+          p_wish_id: string
+        }
+        Returns: Json
+      }
+      confirm_reservation: {
+        Args: {
+          p_wish_id: string
+        }
+        Returns: Json
+      }
+      expire_old_reservations: {
+        Args: Record<string, never>
+        Returns: number
+      }
     }
     Enums: {
       visibility_level: 'PRIVATE' | 'CIRCLE' | 'SELECTED_CIRCLES' | 'PUBLIC'
@@ -358,6 +432,7 @@ export interface Database {
       wish_status: 'ACTIVE' | 'ARCHIVED'
       wish_source: 'MANUAL' | 'LINK' | 'IMPORT'
       wish_context: 'BIRTHDAY' | 'NEW_YEAR' | 'ANNIVERSARY' | 'JUST_WANT' | 'SOMEDAY' | 'OTHER'
+      gift_reservation_status: 'RESERVED' | 'CONFIRMED' | 'CANCELLED' | 'EXPIRED'
     }
   }
 }

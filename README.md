@@ -145,6 +145,7 @@ npx vercel --prod
   - [IMPLEMENTATION_PLAN.md](docs/development/IMPLEMENTATION_PLAN.md) — План реализации Sprint 1 & 1.1
   - [PLAN_SPRINT_2A.md](docs/development/PLAN_SPRINT_2A.md) — План реализации Sprint 2A (Social Graph)
   - [PLAN_SPRINT_2B.md](docs/development/PLAN_SPRINT_2B.md) — План реализации Sprint 2B (Wishlist MVP)
+  - [PLAN_SPRINT_3.md](docs/development/PLAN_SPRINT_3.md) — План реализации Sprint 3 (Gift Reservations MVP)
   - [FOUNDATION_FREEZE.md](docs/development/FOUNDATION_FREEZE.md) — Официальная заморозка фундамента (Sprint 1.2)
   - [SPRINT_1_AUDIT.md](docs/development/SPRINT_1_AUDIT.md) — Полный технический аудит Sprint 1
   - [SPRINT_1.1_AUDIT.md](docs/development/SPRINT_1.1_AUDIT.md) — Полный технический аудит Sprint 1.1 (Hardening)
@@ -152,6 +153,9 @@ npx vercel --prod
   - [SPRINT_2A_AUDIT.md](docs/development/SPRINT_2A_AUDIT.md) — Полный технический аудит Sprint 2A (Social Graph)
   - [SPRINT_2A_1_AUDIT.md](docs/development/SPRINT_2A_1_AUDIT.md) — Полный технический аудит Sprint 2A.1 (Access Hardening)
   - [SPRINT_2B_AUDIT.md](docs/development/SPRINT_2B_AUDIT.md) — Полный технический аудит Sprint 2B (Wishlist MVP)
+  - [SPRINT_3_1_AUDIT.md](docs/development/SPRINT_3_1_AUDIT.md) — Полный технический аудит Sprint 3.1 (Reservation Hardening)
+  - [SPRINT_3_AUDIT.md](docs/development/SPRINT_3_AUDIT.md) — Полный технический аудит Sprint 3 (Gift Reservations MVP)
+  - [SPRINT_3_2_AUDIT.md](docs/development/SPRINT_3_2_AUDIT.md) — Полный технический аудит Sprint 3.2 (UX Polish)
 - **Дизайн**:
   - [DESIGN_GUIDELINES.md](docs/design/DESIGN_GUIDELINES.md) — Цветовая палитра `#0F0F10`, `#17171A`, `#D8B4B0` и типографика
 - **История изменений**:

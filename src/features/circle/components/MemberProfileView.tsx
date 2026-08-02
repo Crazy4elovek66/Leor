@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Avatar } from '@/components/ui/avatar';
@@ -7,6 +7,7 @@ import { InterestsGrid } from '@/features/profile/components/InterestsGrid';
 import { SizesSection } from '@/features/profile/components/SizesSection';
 import { useMemberProfile } from '../hooks/useMemberProfile';
 import { useMemberWishlist } from '@/features/wishlist/hooks/useMemberWishlist';
+import { useWishReservations } from '@/features/reservation/hooks/useWishReservations';
 import { WishlistGrid } from '@/features/wishlist/components/WishlistGrid';
 import { WishDetailsModal } from '@/features/wishlist/components/WishDetailsModal';
 import { resolveWishSize } from '@/features/wishlist/utils/resolveWishSize';
@@ -20,6 +21,9 @@ export function MemberProfileView() {
   const { profile, isLoading, error } = useMemberProfile(profileId);
   const { wishes } = useMemberWishlist(profile?.user.id);
   const [selectedWish, setSelectedWish] = useState<WishItem | null>(null);
+
+  const wishIds = useMemo(() => wishes.map((w) => w.id), [wishes]);
+  const { reservationStates, reserveWish, cancelReservation, confirmReservation } = useWishReservations(wishIds);
 
   if (isLoading) {
     return (
@@ -119,8 +123,12 @@ export function MemberProfileView() {
           <WishlistGrid
             wishes={wishes}
             profileSizes={sizes}
+            reservationStates={reservationStates}
             onSelectWish={(w) => setSelectedWish(w)}
-            isReadOnly
+            onReserveWish={reserveWish}
+            onCancelReservation={cancelReservation}
+            onConfirmReservation={confirmReservation}
+            isOwner={false}
           />
         ) : (
           <Card className="p-5 text-center bg-[#17171A] border-[#26262B]/60">
