@@ -165,6 +165,11 @@ npx vercel --prod
   - [SPRINT_5_1_AUDIT.md](docs/development/SPRINT_5_1_AUDIT.md) — Полный технический аудит Sprint 5.1 (Discovery Hardening)
   - [SPRINT_6_AUDIT.md](docs/development/SPRINT_6_AUDIT.md) — Полный технический аудит Sprint 6 (Public Profiles & Share Layer)
   - [SPRINT_7_AUDIT.md](docs/development/SPRINT_7_AUDIT.md) — Полный технический аудит Sprint 7 (Memories & Relationship Timeline)
+- **Архитектура Phase 2**:
+  - [PHASE_2_MASTERPLAN.md](docs/phase2/PHASE_2_MASTERPLAN.md) — Мастер-план и продуктовое видение Phase 2
+  - [ARCHITECTURE_v3.md](docs/phase2/ARCHITECTURE_v3.md) — Системная архитектура Phase 2 (v3.0)
+  - [RELATIONSHIP_INTELLIGENCE_SPEC.md](docs/phase2/RELATIONSHIP_INTELLIGENCE_SPEC.md) — Спецификация домена аналитики отношений
+  - [SPRINT_8_0_AUDIT.md](docs/phase2/SPRINT_8_0_AUDIT.md) — Аудит выполнения Sprint 8.0 (Architecture Freeze Phase 2)
 - **Дизайн**:
   - [DESIGN_GUIDELINES.md](docs/design/DESIGN_GUIDELINES.md) — Цветовая палитра `#0F0F10`, `#17171A`, `#D8B4B0` и типографика
 - **История изменений**:
