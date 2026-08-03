@@ -78,7 +78,7 @@ export function CreateMemoryModal({
         <form onSubmit={handleSubmit} className="space-y-4 text-xs">
           {/* Title */}
           <div className="space-y-1">
-            <label className="text-[#A1A1AA] font-medium">Название события *</label>
+            <label className="text-[#A1A1AA] font-medium block">Название события *</label>
             <input
               type="text"
               required
@@ -89,38 +89,37 @@ export function CreateMemoryModal({
             />
           </div>
 
-          {/* Event Date & Memory Type */}
-          <div className="grid grid-cols-2 gap-2">
-            <div className="space-y-1">
-              <label className="text-[#A1A1AA] font-medium">Дата события *</label>
-              <input
-                type="date"
-                required
-                value={eventDate}
-                onChange={(e) => setEventDate(e.target.value)}
-                className="w-full bg-[#0F0F10] border border-[#26262B] rounded-xl px-3 py-2 text-[#F5F5F7] focus:border-[#D8B4B0] focus:outline-none"
-              />
-            </div>
+          {/* Event Date */}
+          <div className="space-y-1">
+            <label className="text-[#A1A1AA] font-medium block">Дата события *</label>
+            <input
+              type="date"
+              required
+              value={eventDate}
+              onChange={(e) => setEventDate(e.target.value)}
+              className="w-full bg-[#0F0F10] border border-[#26262B] rounded-xl px-3 py-2.5 text-[#F5F5F7] focus:border-[#D8B4B0] focus:outline-none"
+            />
+          </div>
 
-            <div className="space-y-1">
-              <label className="text-[#A1A1AA] font-medium">Тип события</label>
-              <select
-                value={memoryType}
-                onChange={(e) => setMemoryType(e.target.value as MemoryType)}
-                className="w-full bg-[#0F0F10] border border-[#26262B] rounded-xl px-3 py-2 text-[#F5F5F7] focus:border-[#D8B4B0] focus:outline-none"
-              >
-                {Object.entries(MEMORY_TYPE_META).map(([key, meta]) => (
-                  <option key={key} value={key}>
-                    {meta.label}
-                  </option>
-                ))}
-              </select>
-            </div>
+          {/* Memory Type */}
+          <div className="space-y-1">
+            <label className="text-[#A1A1AA] font-medium block">Тип события</label>
+            <select
+              value={memoryType}
+              onChange={(e) => setMemoryType(e.target.value as MemoryType)}
+              className="w-full bg-[#0F0F10] border border-[#26262B] rounded-xl px-3 py-2.5 text-[#F5F5F7] focus:border-[#D8B4B0] focus:outline-none"
+            >
+              {Object.entries(MEMORY_TYPE_META).map(([key, meta]) => (
+                <option key={key} value={key}>
+                  {meta.label}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* Description */}
           <div className="space-y-1">
-            <label className="text-[#A1A1AA] font-medium">Описание</label>
+            <label className="text-[#A1A1AA] font-medium block">Описание</label>
             <textarea
               rows={3}
               value={description}
@@ -132,7 +131,7 @@ export function CreateMemoryModal({
 
           {/* Cover Image Upload */}
           <div className="space-y-1">
-            <label className="text-[#A1A1AA] font-medium">Обложка (фотография)</label>
+            <label className="text-[#A1A1AA] font-medium block">Обложка (фотография)</label>
             <div className="flex items-center space-x-2">
               <input
                 type="file"

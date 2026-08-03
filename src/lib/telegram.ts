@@ -33,6 +33,8 @@ export interface TelegramWebApp {
   setHeaderColor: (color: string) => void;
   setBackgroundColor: (color: string) => void;
   enableClosingConfirmation: () => void;
+  disableVerticalSwipes?: () => void;
+  requestFullscreen?: () => void;
 }
 
 declare global {
@@ -55,6 +57,25 @@ export function initTelegramApp() {
   if (tg) {
     tg.ready();
     tg.expand();
+
+    // Disable swipe-down-to-close gesture on mobile devices
+    if (typeof (tg as any).disableVerticalSwipes === 'function') {
+      try {
+        (tg as any).disableVerticalSwipes();
+      } catch (e) {
+        console.warn('disableVerticalSwipes not supported on this version', e);
+      }
+    }
+
+    // Request full screen mode if supported by Telegram client
+    if (typeof (tg as any).requestFullscreen === 'function') {
+      try {
+        (tg as any).requestFullscreen();
+      } catch (e) {
+        console.warn('requestFullscreen not supported on this version', e);
+      }
+    }
+
     tg.setHeaderColor('#0F0F10');
     tg.setBackgroundColor('#0F0F10');
   }

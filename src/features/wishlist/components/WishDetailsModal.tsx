@@ -135,7 +135,7 @@ export function WishDetailsModal({
                   onClose();
                 }}
               >
-                <Archive className="w-3.5 h-3.5 mr-1" /> В архив
+                <Archive className="w-3.5 h-3.5 mr-1" /> {wish.status === 'ARCHIVED' ? 'Из архива' : 'В архив'}
               </Button>
             )}
 

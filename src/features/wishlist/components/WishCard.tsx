@@ -55,11 +55,15 @@ export function WishCard({
       {/* Cover Image Header */}
       <div className="relative w-full h-44 bg-[#26262B] overflow-hidden flex items-center justify-center shrink-0">
         {wish.imageUrl ? (
-          <img
-            src={wish.imageUrl}
-            alt={wish.title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          />
+          <>
+            <img
+              src={wish.imageUrl}
+              alt={wish.title}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+            {/* Dark gradient overlay for 100% badge contrast on light cover images */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/60 pointer-events-none" />
+          </>
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-[#26262B] to-[#1D1D21] flex flex-col items-center justify-center text-[#D8B4B0]">
             <Gift className="w-10 h-10 opacity-70 mb-1" />
@@ -68,15 +72,15 @@ export function WishCard({
         )}
 
         {/* Priority Badge Overlay */}
-        <div className="absolute top-3 right-3">
-          <span className={`text-[10px] font-semibold px-2.5 py-1 rounded-full border backdrop-blur-md ${priorityMeta.colorClass}`}>
+        <div className="absolute top-3 right-3 z-10">
+          <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border backdrop-blur-md shadow-md ${priorityMeta.colorClass}`}>
             {priorityMeta.label}
           </span>
         </div>
 
         {/* Context Tag Overlay */}
-        <div className="absolute bottom-3 left-3">
-          <span className="text-[10px] font-medium bg-[#0F0F10]/80 text-[#F5F5F7] px-2.5 py-1 rounded-full border border-[#383843] backdrop-blur-md flex items-center space-x-1">
+        <div className="absolute bottom-3 left-3 z-10">
+          <span className="text-[10px] font-semibold bg-[#0F0F10]/95 text-[#F5F5F7] px-2.5 py-1 rounded-full border border-[#383843] backdrop-blur-md shadow-md flex items-center space-x-1">
             <Sparkles className="w-2.5 h-2.5 text-[#D8B4B0]" />
             <span>{contextLabel}</span>
           </span>

@@ -127,9 +127,9 @@ export function CreateWishModal({ isOpen, onClose, onSubmit, onUploadImage, wish
           autoFocus
         />
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-3 items-start">
           <Input
-            label="Бренд / Производитель"
+            label="Бренд"
             placeholder="Sony, Zara, Nike..."
             value={brand}
             onChange={(e) => setBrand(e.target.value)}
