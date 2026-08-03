@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.0.0] - 2026-08-07 — Sprint 7 (Memories & Relationship Timeline)
+
+### Added
+- **Memories Database Schema (`memories`, `memory_participants`, `memory_media`)**: Defined tables, indexes, and PostgreSQL ENUM `memory_type` (`GIFT`, `EVENT`, `PHOTO`, `TRAVEL`, `CELEBRATION`, `ACHIEVEMENT`, `MILESTONE`, `OTHER`).
+- **RPC `get_relationship_timeline`**: Created RLS-protected RPC returning a unified chronological timeline of memories and confirmed gifts.
+- **Supabase Storage Bucket `memory-images`**: Added public storage bucket for memory covers and gallery images.
+- **Memories Module (`src/features/memories/`)**: Built `MemoryFeedView`, `MemoryDetailsView`, `RelationshipTimeline`, `MemoryCard`, `MemoryGallery`, `CreateMemoryModal`, and React hooks.
+- **Navigation Integration**: Activated `/memories` and `/memories/:id` routes and enabled the "Память" tab in `BottomNavigation.tsx`.
+
+---
+
 ## [6.0.0] - 2026-08-06 — Sprint 6 (Public Profiles & Share Layer)
 
 ### Added
@@ -20,13 +31,3 @@ All notable changes to this project will be documented in this file.
 - **Stable Ordering**: Guaranteed deterministic sorting using `score DESC`, `freshness_boost DESC`, `created_at DESC`.
 - **Explainability Optimization**: Limited `reasons` to max 3 unique, prioritized entries (Brand &rarr; Category &rarr; Taste Graph &rarr; Circle name).
 - **Performance Indexes**: Added `idx_wishes_user_status_created` and `idx_circle_members_user_circle` composite indexes.
-
----
-
-## [5.0.0] - 2026-08-05 — Sprint 5 (Gift Discovery Engine MVP)
-
-### Added
-- **SQL Discovery Engine (`get_discovery_feed`)**: Created RPC function generating personalized gift recommendations by matching the user's Taste Graph against active wishlist items from circle peers.
-- **Scoring & Explanation Engine**: Implemented 0–100 match score formula combining node weight (50%), edge strength (30%), and wish priority (20%), alongside automated reasons generation.
-- **Discovery Module (`src/features/discovery/`)**: Built `DiscoveryCard`, `DiscoveryFeedView`, `useDiscoveryFeed` hook, and domain types.
-- **`/discover` Route & Bottom Navigation**: Added protected `/discover` route and active "Открытия" tab in `BottomNavigation.tsx`.

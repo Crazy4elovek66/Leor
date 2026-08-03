@@ -448,6 +448,96 @@ export interface Database {
           updated_at?: string
         }
       }
+      memories: {
+        Row: {
+          id: string
+          owner_user_id: string
+          circle_id: string | null
+          wish_id: string | null
+          gift_reservation_id: string | null
+          title: string
+          description: string | null
+          memory_type: Database['public']['Enums']['memory_type']
+          event_date: string
+          cover_image_url: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          owner_user_id: string
+          circle_id?: string | null
+          wish_id?: string | null
+          gift_reservation_id?: string | null
+          title: string
+          description?: string | null
+          memory_type?: Database['public']['Enums']['memory_type']
+          event_date?: string
+          cover_image_url?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          owner_user_id?: string
+          circle_id?: string | null
+          wish_id?: string | null
+          gift_reservation_id?: string | null
+          title?: string
+          description?: string | null
+          memory_type?: Database['public']['Enums']['memory_type']
+          event_date?: string
+          cover_image_url?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      memory_participants: {
+        Row: {
+          id: string
+          memory_id: string
+          user_id: string
+          role: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          memory_id: string
+          user_id: string
+          role?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          memory_id?: string
+          user_id?: string
+          role?: string
+          created_at?: string
+        }
+      }
+      memory_media: {
+        Row: {
+          id: string
+          memory_id: string
+          image_url: string
+          sort_order: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          memory_id: string
+          image_url: string
+          sort_order?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          memory_id?: string
+          image_url?: string
+          sort_order?: number
+          created_at?: string
+        }
+      }
     }
     Views: {
       gift_profile_public: {
@@ -579,6 +669,12 @@ export interface Database {
         }
         Returns: Json
       }
+      get_relationship_timeline: {
+        Args: {
+          p_profile_id: string
+        }
+        Returns: Json
+      }
     }
     Enums: {
       visibility_level: 'PRIVATE' | 'CIRCLE' | 'SELECTED_CIRCLES' | 'PUBLIC'
@@ -593,6 +689,7 @@ export interface Database {
       wish_context: 'BIRTHDAY' | 'NEW_YEAR' | 'ANNIVERSARY' | 'JUST_WANT' | 'SOMEDAY' | 'OTHER'
       gift_reservation_status: 'RESERVED' | 'CONFIRMED' | 'CANCELLED' | 'EXPIRED'
       taste_node_type: 'BRAND' | 'CATEGORY' | 'STYLE' | 'COLOR' | 'MATERIAL' | 'HOBBY' | 'BOOK' | 'MOVIE' | 'GAME' | 'MUSIC' | 'TRAVEL' | 'FOOD' | 'CREATOR' | 'OTHER'
+      memory_type: 'GIFT' | 'EVENT' | 'PHOTO' | 'TRAVEL' | 'CELEBRATION' | 'ACHIEVEMENT' | 'MILESTONE' | 'OTHER'
     }
   }
 }

@@ -11,6 +11,8 @@ import { MemberProfileView } from '@/features/circle/components/MemberProfileVie
 import { MyReservationsView } from '@/features/reservation/components/MyReservationsView';
 import { DiscoveryFeedView } from '@/features/discovery/components/DiscoveryFeedView';
 import { PublicProfileView } from '@/features/share/components/PublicProfileView';
+import { MemoryFeedView } from '@/features/memories/components/MemoryFeedView';
+import { MemoryDetailsView } from '@/features/memories/components/MemoryDetailsView';
 
 export function AppRouter() {
   const navigate = useNavigate();
@@ -96,6 +98,26 @@ export function AppRouter() {
             element={
               <TelegramAuthGuard>
                 {() => <DiscoveryFeedView />}
+              </TelegramAuthGuard>
+            }
+          />
+
+          <Route
+            path="/memories"
+            element={
+              <TelegramAuthGuard>
+                {({ userId, profileId }) => (
+                  <MemoryFeedView currentUserId={userId} profileId={profileId} />
+                )}
+              </TelegramAuthGuard>
+            }
+          />
+
+          <Route
+            path="/memories/:id"
+            element={
+              <TelegramAuthGuard>
+                {() => <MemoryDetailsView />}
               </TelegramAuthGuard>
             }
           />

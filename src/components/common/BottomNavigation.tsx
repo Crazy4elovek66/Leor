@@ -1,4 +1,4 @@
-import { User, Users, Compass } from 'lucide-react';
+import { User, Users, Compass, Sparkles } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
@@ -10,6 +10,7 @@ export function BottomNavigation() {
     { key: 'profile', label: 'Профиль', icon: User, path: '/profile', active: location.pathname === '/profile' },
     { key: 'circles', label: 'Круги', icon: Users, path: '/circles', active: location.pathname.startsWith('/circles'), disabled: false },
     { key: 'discover', label: 'Открытия', icon: Compass, path: '/discover', active: location.pathname === '/discover', disabled: false },
+    { key: 'memories', label: 'Память', icon: Sparkles, path: '/memories', active: location.pathname.startsWith('/memories'), disabled: false },
   ];
 
   return (
