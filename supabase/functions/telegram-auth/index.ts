@@ -156,6 +156,7 @@ serve(async (req: any) => {
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY") ?? supabaseServiceKey;
     
     if (!supabaseUrl || !supabaseServiceKey) {
       return new Response(JSON.stringify({ error: "Supabase Service Role configuration missing" }), {
@@ -164,7 +165,8 @@ serve(async (req: any) => {
       });
     }
 
-    // 1. Create a dedicated service role client
+    // 1. Dedicated Service Role client FOR DATABASE & ADMIN OPERATIONS ONLY.
+    // NEVER call signInWithPassword on supabaseAdmin so its Bearer token is strictly SERVICE_ROLE_KEY.
     const supabaseAdmin = createClient(
       supabaseUrl,
       supabaseServiceKey,
@@ -176,15 +178,26 @@ serve(async (req: any) => {
       }
     );
 
-    // 2. Supabase Auth User setup via Admin API
+    // 2. Separate client for user sign-in (to get user access_token & refresh_token)
+    const supabaseAuth = createClient(
+      supabaseUrl,
+      supabaseAnonKey,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false,
+        },
+      }
+    );
+
     const email = `telegram_${telegramUser.id}@leor.local`;
     const password = `Leor_TgAuth_${telegramUser.id}_${supabaseServiceKey.slice(0, 16)}`;
 
     let session = null;
     let authUser = null;
 
-    // Try signing in
-    const { data: signInData } = await supabaseAdmin.auth.signInWithPassword({
+    // Try signing in using supabaseAuth
+    const { data: signInData } = await supabaseAuth.auth.signInWithPassword({
       email,
       password,
     });
@@ -193,7 +206,7 @@ serve(async (req: any) => {
       session = signInData.session;
       authUser = signInData.user;
     } else {
-      // Create user via Admin API
+      // Create user via Admin API on supabaseAdmin
       const { data: createData, error: createError } = await supabaseAdmin.auth.admin.createUser({
         email,
         password,
@@ -210,7 +223,7 @@ serve(async (req: any) => {
         
         if (existingAuthUser) {
           await supabaseAdmin.auth.admin.updateUserById(existingAuthUser.id, { password });
-          const { data: reSignInData, error: reSignInErr } = await supabaseAdmin.auth.signInWithPassword({
+          const { data: reSignInData, error: reSignInErr } = await supabaseAuth.auth.signInWithPassword({
             email,
             password,
           });
@@ -225,7 +238,7 @@ serve(async (req: any) => {
         }
       } else {
         authUser = createData.user;
-        const { data: newSignInData, error: newSignInErr } = await supabaseAdmin.auth.signInWithPassword({
+        const { data: newSignInData, error: newSignInErr } = await supabaseAuth.auth.signInWithPassword({
           email,
           password,
         });
@@ -237,7 +250,7 @@ serve(async (req: any) => {
       }
     }
 
-    // 3. Upsert public.users record via supabaseAdmin
+    // 3. Upsert public.users record via supabaseAdmin (bypasses RLS)
     const { data: user, error: userError } = await supabaseAdmin
       .from("users")
       .upsert(
@@ -260,7 +273,7 @@ serve(async (req: any) => {
       throw userError || new Error("Failed to upsert user record");
     }
 
-    // 4. Ensure GiftProfile exists for public.users via supabaseAdmin
+    // 4. Ensure GiftProfile exists for public.users via supabaseAdmin (bypasses RLS)
     const { data: existingProfile } = await supabaseAdmin
       .from("gift_profiles")
       .select("id")
