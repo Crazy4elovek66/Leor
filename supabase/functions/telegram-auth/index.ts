@@ -1,6 +1,6 @@
 // Deno Edge Function: telegram-auth
 // Validates Telegram WebApp initData HMAC signature & auth_date replay protection,
-// creates/retrieves Supabase Auth user & public tables via Service Role,
+// creates/retrieves Supabase Auth user & public tables via Service Role (supabaseAdmin),
 // and returns access_token + refresh_token.
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
@@ -160,9 +160,19 @@ serve(async (req) => {
       });
     }
 
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    // 1. Create a dedicated service role client
+    const supabaseAdmin = createClient(
+      supabaseUrl,
+      supabaseServiceKey,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false,
+        },
+      }
+    );
 
-    // 1. Supabase Auth User setup via Admin API
+    // 2. Supabase Auth User setup via Admin API
     const email = `telegram_${telegramUser.id}@leor.local`;
     const password = `Leor_TgAuth_${telegramUser.id}_${supabaseServiceKey.slice(0, 16)}`;
 
@@ -170,7 +180,7 @@ serve(async (req) => {
     let authUser = null;
 
     // Try signing in
-    const { data: signInData } = await supabase.auth.signInWithPassword({
+    const { data: signInData } = await supabaseAdmin.auth.signInWithPassword({
       email,
       password,
     });
@@ -180,7 +190,7 @@ serve(async (req) => {
       authUser = signInData.user;
     } else {
       // Create user via Admin API
-      const { data: createData, error: createError } = await supabase.auth.admin.createUser({
+      const { data: createData, error: createError } = await supabaseAdmin.auth.admin.createUser({
         email,
         password,
         email_confirm: true,
@@ -191,12 +201,12 @@ serve(async (req) => {
       });
 
       if (createError || !createData.user) {
-        const { data: listData } = await supabase.auth.admin.listUsers();
+        const { data: listData } = await supabaseAdmin.auth.admin.listUsers();
         const existingAuthUser = listData?.users?.find((u) => u.email === email);
         
         if (existingAuthUser) {
-          await supabase.auth.admin.updateUserById(existingAuthUser.id, { password });
-          const { data: reSignInData, error: reSignInErr } = await supabase.auth.signInWithPassword({
+          await supabaseAdmin.auth.admin.updateUserById(existingAuthUser.id, { password });
+          const { data: reSignInData, error: reSignInErr } = await supabaseAdmin.auth.signInWithPassword({
             email,
             password,
           });
@@ -211,7 +221,7 @@ serve(async (req) => {
         }
       } else {
         authUser = createData.user;
-        const { data: newSignInData, error: newSignInErr } = await supabase.auth.signInWithPassword({
+        const { data: newSignInData, error: newSignInErr } = await supabaseAdmin.auth.signInWithPassword({
           email,
           password,
         });
@@ -223,110 +233,71 @@ serve(async (req) => {
       }
     }
 
-    // 2. Ensure public.users record exists with id = authUser.id
-    const { data: existingUser } = await supabase
+    // 3. Upsert public.users record via supabaseAdmin
+    const { data: user, error: userError } = await supabaseAdmin
       .from("users")
-      .select("id, telegram_id, first_name, last_name, username, avatar_url")
-      .eq("id", authUser.id)
-      .maybeSingle();
-
-    let dbUser = existingUser;
-
-    if (!dbUser) {
-      const { data: userByTg } = await supabase
-        .from("users")
-        .select("id, telegram_id, first_name, last_name, username, avatar_url")
-        .eq("telegram_id", telegramUser.id)
-        .maybeSingle();
-
-      if (userByTg) {
-        const { data: updatedUser, error: updateErr } = await supabase
-          .from("users")
-          .update({
-            id: authUser.id,
-            username: telegramUser.username ?? null,
-            first_name: telegramUser.first_name,
-            last_name: telegramUser.last_name ?? null,
-            avatar_url: telegramUser.photo_url ?? null,
-            updated_at: new Date().toISOString(),
-          })
-          .eq("telegram_id", telegramUser.id)
-          .select()
-          .single();
-
-        if (updateErr) throw updateErr;
-        dbUser = updatedUser;
-      } else {
-        const { data: newUser, error: insertErr } = await supabase
-          .from("users")
-          .insert({
-            id: authUser.id,
-            telegram_id: telegramUser.id,
-            username: telegramUser.username ?? null,
-            first_name: telegramUser.first_name,
-            last_name: telegramUser.last_name ?? null,
-            avatar_url: telegramUser.photo_url ?? null,
-            updated_at: new Date().toISOString(),
-          })
-          .select()
-          .single();
-
-        if (insertErr) throw insertErr;
-        dbUser = newUser;
-      }
-    } else {
-      const { data: updatedUser } = await supabase
-        .from("users")
-        .update({
+      .upsert(
+        {
+          id: authUser.id,
+          telegram_id: telegramUser.id,
           username: telegramUser.username ?? null,
           first_name: telegramUser.first_name,
           last_name: telegramUser.last_name ?? null,
           avatar_url: telegramUser.photo_url ?? null,
           updated_at: new Date().toISOString(),
-        })
-        .eq("id", authUser.id)
+        },
+        { onConflict: "telegram_id" }
+      )
+      .select()
+      .single();
+
+    if (userError || !user) {
+      console.error("User upsert error:", userError);
+      throw userError || new Error("Failed to upsert user record");
+    }
+
+    // 4. Ensure GiftProfile exists for public.users via supabaseAdmin
+    const { data: existingProfile } = await supabaseAdmin
+      .from("gift_profiles")
+      .select("id")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    let profile = existingProfile;
+
+    if (!profile) {
+      const { data: newProfile, error: profileError } = await supabaseAdmin
+        .from("gift_profiles")
+        .insert({ user_id: user.id })
         .select()
         .single();
 
-      if (updatedUser) dbUser = updatedUser;
+      if (profileError) {
+        console.error("Gift profile creation error:", profileError);
+        throw profileError;
+      }
+      profile = newProfile;
     }
 
-    // 3. Ensure GiftProfile exists for public.users.id
-    const { data: existingProfile } = await supabase
-      .from("gift_profiles")
-      .select("id")
-      .eq("user_id", dbUser.id)
-      .maybeSingle();
-
-    let profileId = existingProfile?.id;
-
-    if (!profileId) {
-      const { data: newProfile, error: profileError } = await supabase
-        .from("gift_profiles")
-        .insert({ user_id: dbUser.id })
-        .select("id")
-        .single();
-
-      if (profileError) throw profileError;
-      profileId = newProfile.id;
-    }
-
+    // 5. Return success response
     return new Response(
       JSON.stringify({
         success: true,
         access_token: session.access_token,
         refresh_token: session.refresh_token,
         user: {
-          id: dbUser.id,
-          telegramId: dbUser.telegram_id,
-          username: dbUser.username,
-          firstName: dbUser.first_name,
-          lastName: dbUser.last_name,
-          avatarUrl: dbUser.avatar_url,
-          profileId: profileId,
+          id: user.id,
+          telegramId: Number(user.telegram_id),
+          firstName: user.first_name,
+          lastName: user.last_name,
+          username: user.username,
+          avatarUrl: user.avatar_url,
+          profileId: profile.id,
         },
+        profileId: profile.id,
       }),
       {
+        status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       }
     );
