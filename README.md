@@ -170,7 +170,12 @@ npx vercel --prod
   - [ARCHITECTURE_v3.md](docs/phase2/ARCHITECTURE_v3.md) — Системная архитектура Phase 2 (v3.0)
   - [RELATIONSHIP_INTELLIGENCE_SPEC.md](docs/phase2/RELATIONSHIP_INTELLIGENCE_SPEC.md) — Спецификация домена аналитики отношений
   - [SPRINT_8_0_AUDIT.md](docs/phase2/SPRINT_8_0_AUDIT.md) — Аудит выполнения Sprint 8.0 (Architecture Freeze Phase 2)
-  - [SPRINT_8_1_AUDIT.md](docs/phase2/SPRINT_8_1_AUDIT.md) — Полный технический аудит Sprint 8.1 (Relationship Intelligence Engine)
+- **Архитектура и Аудит**:
+  - [LEOR_CORE_v2.2.md](docs/cleanup/LEOR_CORE_v2.2.md) — Документ продуктового и архитектурного ядра Leor Core v2.2
+  - [LEOR_CORE_CLEANUP_AUDIT_v2.2.md](docs/audit/LEOR_CORE_CLEANUP_AUDIT_v2.2.md) — Официальный аудит очистки ядра Leor Core v2.2
+  - [PRE_DEPLOY_REVIEW_v2.2.md](docs/audit/PRE_DEPLOY_REVIEW_v2.2.md) — Предпродакшн аудит готовности к деплою на Vercel + Supabase + Telegram
+  - [DEPLOY_READINESS_CHECK_v2.2.md](docs/audit/DEPLOY_READINESS_CHECK_v2.2.md) — Финальный чек-лист готовности к продакшн деплою
+  - [LEOR_PRODUCT_AUDIT_v2.md](LEOR_PRODUCT_AUDIT_v2.md) — Полный продуктовый и архитектурный аудит соответствия PRODUCT_SPEC_v2.1_FROZEN.md
 - **Дизайн**:
   - [DESIGN_GUIDELINES.md](docs/design/DESIGN_GUIDELINES.md) — Цветовая палитра `#0F0F10`, `#17171A`, `#D8B4B0` и типографика
 - **История изменений**:

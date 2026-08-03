@@ -538,76 +538,6 @@ export interface Database {
           created_at?: string
         }
       }
-      relationship_scores: {
-        Row: {
-          id: string
-          user_a: string
-          user_b: string
-          strength_score: number
-          gift_affinity: number
-          memory_affinity: number
-          taste_similarity: number
-          interaction_score: number
-          last_recalculated_at: string
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          user_a: string
-          user_b: string
-          strength_score?: number
-          gift_affinity?: number
-          memory_affinity?: number
-          taste_similarity?: number
-          interaction_score?: number
-          last_recalculated_at?: string
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          user_a?: string
-          user_b?: string
-          strength_score?: number
-          gift_affinity?: number
-          memory_affinity?: number
-          taste_similarity?: number
-          interaction_score?: number
-          last_recalculated_at?: string
-          created_at?: string
-          updated_at?: string
-        }
-      }
-      relationship_events: {
-        Row: {
-          id: string
-          relationship_id: string
-          event_type: string
-          source_table: string
-          source_id: string | null
-          score_delta: number
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          relationship_id: string
-          event_type: string
-          source_table: string
-          source_id?: string | null
-          score_delta?: number
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          relationship_id?: string
-          event_type?: string
-          source_table?: string
-          source_id?: string | null
-          score_delta?: number
-          created_at?: string
-        }
-      }
     }
     Views: {
       gift_profile_public: {
@@ -740,25 +670,6 @@ export interface Database {
         Returns: Json
       }
       get_relationship_timeline: {
-        Args: {
-          p_profile_id: string
-        }
-        Returns: Json
-      }
-      calculate_relationship_strength: {
-        Args: {
-          p_user_a: string
-          p_user_b: string
-        }
-        Returns: Json
-      }
-      rebuild_relationship_scores: {
-        Args: {
-          p_user_id: string
-        }
-        Returns: number
-      }
-      get_relationship_summary: {
         Args: {
           p_profile_id: string
         }
