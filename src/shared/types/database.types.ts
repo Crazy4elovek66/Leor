@@ -410,6 +410,44 @@ export interface Database {
           created_at?: string
         }
       }
+      public_profile_shares: {
+        Row: {
+          id: string
+          profile_id: string
+          share_token: string
+          is_active: boolean
+          show_basic_info: boolean
+          show_interests: boolean
+          show_wishlist: boolean
+          show_sizes: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          profile_id: string
+          share_token: string
+          is_active?: boolean
+          show_basic_info?: boolean
+          show_interests?: boolean
+          show_wishlist?: boolean
+          show_sizes?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          profile_id?: string
+          share_token?: string
+          is_active?: boolean
+          show_basic_info?: boolean
+          show_interests?: boolean
+          show_wishlist?: boolean
+          show_sizes?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+      }
     }
     Views: {
       gift_profile_public: {
@@ -504,6 +542,40 @@ export interface Database {
       get_discovery_feed: {
         Args: {
           p_limit?: number
+        }
+        Returns: Json
+      }
+      create_public_share: {
+        Args: {
+          p_profile_id: string
+        }
+        Returns: Json
+      }
+      rotate_public_share_token: {
+        Args: {
+          p_profile_id: string
+        }
+        Returns: Json
+      }
+      disable_public_share: {
+        Args: {
+          p_profile_id: string
+        }
+        Returns: Json
+      }
+      update_public_share_visibility: {
+        Args: {
+          p_profile_id: string
+          p_basic: boolean
+          p_interests: boolean
+          p_wishlist: boolean
+          p_sizes: boolean
+        }
+        Returns: Json
+      }
+      get_public_profile: {
+        Args: {
+          p_token: string
         }
         Returns: Json
       }

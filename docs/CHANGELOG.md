@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [6.0.0] - 2026-08-06 — Sprint 6 (Public Profiles & Share Layer)
+
+### Added
+- **Public Profile Share Schema (`public_profile_shares`)**: Created table storing cryptographically secure 24+ character Base62 share tokens and section visibility flags.
+- **Security-focused RPC Functions**: Implemented `create_public_share`, `rotate_public_share_token`, `disable_public_share`, `update_public_share_visibility`, and unauthenticated `get_public_profile`.
+- **Public Share View (`/share/:token`)**: Developed unauthenticated screen displaying public profile information, OpenGraph meta tags, and public wishlist items without exposing internal IDs, circles, or reservations.
+- **Share Management Component (`ShareSettings`)**: Integrated share link creation, one-click copying, token rotation, disabling, and section visibility toggles into `/profile`.
+
+---
+
 ## [5.1.0] - 2026-08-05 — Sprint 5.1 (Discovery Hardening)
 
 ### Added & Hardened
@@ -20,13 +30,3 @@ All notable changes to this project will be documented in this file.
 - **Scoring & Explanation Engine**: Implemented 0–100 match score formula combining node weight (50%), edge strength (30%), and wish priority (20%), alongside automated reasons generation.
 - **Discovery Module (`src/features/discovery/`)**: Built `DiscoveryCard`, `DiscoveryFeedView`, `useDiscoveryFeed` hook, and domain types.
 - **`/discover` Route & Bottom Navigation**: Added protected `/discover` route and active "Открытия" tab in `BottomNavigation.tsx`.
-
----
-
-## [4.1.0] - 2026-08-04 — Sprint 4.1 (Taste Graph Hardening)
-
-### Added & Hardened
-- **Co-occurrence Edge Engine**: Upgraded `rebuild_taste_graph()` to dynamically build edges between all co-occurring nodes (`BRAND ↔ BRAND`, `CATEGORY ↔ CATEGORY`, `CATEGORY ↔ BRAND`, `HOBBY ↔ CATEGORY`, etc.).
-- **Dynamic Edge Strength Formula**: Calculated strength as `min(1.00, shared_occurrences * 0.25)`.
-- **UPSERT Edge Updates & Source Tracking**: Added `source_count` column to `taste_graph_edges` table and implemented `ON CONFLICT DO UPDATE` without deleting active edges.
-- **Graph Density Protection**: Enforced a hard limit of max 1000 edges per user, preserving only the highest strength edges.

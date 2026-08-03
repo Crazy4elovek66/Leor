@@ -10,6 +10,7 @@ import { CircleDetailsView } from '@/features/circle/components/CircleDetailsVie
 import { MemberProfileView } from '@/features/circle/components/MemberProfileView';
 import { MyReservationsView } from '@/features/reservation/components/MyReservationsView';
 import { DiscoveryFeedView } from '@/features/discovery/components/DiscoveryFeedView';
+import { PublicProfileView } from '@/features/share/components/PublicProfileView';
 
 export function AppRouter() {
   const navigate = useNavigate();
@@ -33,6 +34,9 @@ export function AppRouter() {
             <OnboardingCarousel onComplete={handleCompleteOnboarding} />
           }
         />
+
+        {/* Public Unauthenticated Share Route */}
+        <Route path="/share/:token" element={<PublicProfileView />} />
 
         {/* Authenticated App Routes */}
         <Route element={<AppLayout />}>

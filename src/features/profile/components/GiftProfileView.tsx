@@ -13,6 +13,7 @@ import { WishlistGrid } from '@/features/wishlist/components/WishlistGrid';
 import { CreateWishModal } from '@/features/wishlist/components/CreateWishModal';
 import { WishDetailsModal } from '@/features/wishlist/components/WishDetailsModal';
 import { TasteGraphView } from '@/features/taste/components/TasteGraphView';
+import { ShareSettings } from '@/features/share/components/ShareSettings';
 import { resolveWishSize } from '@/features/wishlist/utils/resolveWishSize';
 import type { WishItem } from '@/features/wishlist/types';
 import { formatDate } from '@/lib/utils';
@@ -236,6 +237,9 @@ export function GiftProfileView({ userId, profileId }: GiftProfileViewProps) {
           </Card>
         )}
       </div>
+
+      {/* Public Share Settings Section */}
+      <ShareSettings profileId={profileId} />
 
       {/* Modals */}
       <EditProfileModal
