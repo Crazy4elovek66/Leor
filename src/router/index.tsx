@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { AppLayout } from '@/layouts/AppLayout';
 import { RootLayout } from '@/layouts/RootLayout';
@@ -19,6 +19,20 @@ export function AppRouter() {
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState<boolean>(() => {
     return localStorage.getItem('leor_onboarding_completed') === 'true';
   });
+
+  // Handle Telegram Direct Link start_param (e.g. startapp=share_TOKEN)
+  useEffect(() => {
+    const tg = (window as any).Telegram?.WebApp;
+    const searchParams = new URLSearchParams(window.location.search);
+    const startParam = tg?.initDataUnsafe?.start_param || searchParams.get('startapp') || searchParams.get('tgWebAppStartParam');
+
+    if (startParam && startParam.startsWith('share_')) {
+      const token = startParam.replace('share_', '');
+      if (token) {
+        navigate(`/share/${token}`, { replace: true });
+      }
+    }
+  }, [navigate]);
 
   const handleCompleteOnboarding = () => {
     localStorage.setItem('leor_onboarding_completed', 'true');

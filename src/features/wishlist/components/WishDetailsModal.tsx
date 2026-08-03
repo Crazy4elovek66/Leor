@@ -2,7 +2,7 @@ import { Dialog } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import type { WishItem } from '../types';
 import { WISH_CATEGORY_META, WISH_PRIORITY_META, WISH_CONTEXT_LABELS } from '../types';
-import { ExternalLink, Tag, Sparkles, Archive, Trash2 } from 'lucide-react';
+import { ExternalLink, Tag, Sparkles, Archive, Trash2, Edit3 } from 'lucide-react';
 
 interface WishDetailsModalProps {
   isOpen: boolean;
@@ -11,6 +11,7 @@ interface WishDetailsModalProps {
   resolvedSize?: string | null;
   isOwner?: boolean;
   isReadOnly?: boolean;
+  onEdit?: (wish: WishItem) => void;
   onArchive?: (id: string) => Promise<void>;
   onDelete?: (id: string) => Promise<void>;
 }
@@ -21,6 +22,7 @@ export function WishDetailsModal({
   wish,
   resolvedSize,
   isOwner = false,
+  onEdit,
   onArchive,
   onDelete,
 }: WishDetailsModalProps) {
@@ -57,6 +59,11 @@ export function WishDetailsModal({
           </div>
 
           <h2 className="text-lg font-bold text-[#F5F5F7] mt-1">{wish.title}</h2>
+          {wish.brand && (
+            <div className="text-xs font-semibold text-[#D8B4B0] uppercase tracking-wider mt-0.5">
+              {wish.brand}
+            </div>
+          )}
           {formattedPrice && (
             <div className="text-xl font-extrabold text-[#D8B4B0] font-mono mt-1">
               {formattedPrice}
@@ -104,18 +111,31 @@ export function WishDetailsModal({
 
         {/* Owner Actions */}
         {isOwner && (
-          <div className="flex items-center space-x-2 pt-3 border-t border-[#26262B]">
+          <div className="grid grid-cols-3 gap-2 pt-3 border-t border-[#26262B]">
+            {onEdit && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-xs"
+                onClick={() => {
+                  onEdit(wish);
+                }}
+              >
+                <Edit3 className="w-3.5 h-3.5 mr-1" /> Изменить
+              </Button>
+            )}
+
             {onArchive && (
               <Button
                 variant="outline"
                 size="sm"
-                className="flex-1 text-xs"
+                className="text-xs"
                 onClick={async () => {
                   await onArchive(wish.id);
                   onClose();
                 }}
               >
-                <Archive className="w-3.5 h-3.5 mr-1.5" /> В архив
+                <Archive className="w-3.5 h-3.5 mr-1" /> В архив
               </Button>
             )}
 
@@ -123,13 +143,13 @@ export function WishDetailsModal({
               <Button
                 variant="danger"
                 size="sm"
-                className="flex-1 text-xs"
+                className="text-xs"
                 onClick={async () => {
                   await onDelete(wish.id);
                   onClose();
                 }}
               >
-                <Trash2 className="w-3.5 h-3.5 mr-1.5" /> Удалить
+                <Trash2 className="w-3.5 h-3.5 mr-1" /> Удалить
               </Button>
             )}
           </div>

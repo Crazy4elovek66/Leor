@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import type { CreateWishPayload, WishCategory, WishPriority, WishContext } from '../types';
+import type { CreateWishPayload, WishCategory, WishPriority, WishContext, WishItem } from '../types';
 import { WISH_CATEGORY_META, WISH_PRIORITY_META, WISH_CONTEXT_LABELS } from '../types';
 import { Upload } from 'lucide-react';
 import { toast } from 'sonner';
@@ -13,13 +13,14 @@ interface CreateWishModalProps {
   onClose: () => void;
   onSubmit: (payload: CreateWishPayload) => Promise<void>;
   onUploadImage?: (file: File) => Promise<string | null>;
+  wishToEdit?: WishItem | null;
 }
 
 const CATEGORIES: WishCategory[] = ['TECH', 'BOOKS', 'CLOTHING', 'BEAUTY', 'HOME', 'HOBBY', 'FOOD', 'TRAVEL', 'EXPERIENCE', 'OTHER'];
 const PRIORITIES: WishPriority[] = ['HIGH', 'MEDIUM', 'LOW'];
 const CONTEXTS: WishContext[] = ['BIRTHDAY', 'NEW_YEAR', 'ANNIVERSARY', 'JUST_WANT', 'SOMEDAY', 'OTHER'];
 
-export function CreateWishModal({ isOpen, onClose, onSubmit, onUploadImage }: CreateWishModalProps) {
+export function CreateWishModal({ isOpen, onClose, onSubmit, onUploadImage, wishToEdit }: CreateWishModalProps) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [brand, setBrand] = useState('');
@@ -34,6 +35,36 @@ export function CreateWishModal({ isOpen, onClose, onSubmit, onUploadImage }: Cr
 
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      if (wishToEdit) {
+        setTitle(wishToEdit.title || '');
+        setDescription(wishToEdit.description || '');
+        setBrand(wishToEdit.brand || '');
+        setPrice(wishToEdit.price !== null && wishToEdit.price !== undefined ? String(wishToEdit.price) : '');
+        setLink(wishToEdit.link || '');
+        setImageUrl(wishToEdit.imageUrl || '');
+        setCategory(wishToEdit.category || 'OTHER');
+        setPriority(wishToEdit.priority || 'MEDIUM');
+        setContext(wishToEdit.context || 'JUST_WANT');
+        setIsSurpriseFriendly(wishToEdit.isSurpriseFriendly ?? true);
+        setSizeOverride(wishToEdit.sizeOverride || '');
+      } else {
+        setTitle('');
+        setDescription('');
+        setBrand('');
+        setPrice('');
+        setLink('');
+        setImageUrl('');
+        setCategory('OTHER');
+        setPriority('MEDIUM');
+        setContext('JUST_WANT');
+        setIsSurpriseFriendly(true);
+        setSizeOverride('');
+      }
+    }
+  }, [isOpen, wishToEdit]);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -76,28 +107,16 @@ export function CreateWishModal({ isOpen, onClose, onSubmit, onUploadImage }: Cr
         sizeOverride: sizeOverride.trim() || undefined,
       });
 
-      // Reset form
-      setTitle('');
-      setDescription('');
-      setBrand('');
-      setPrice('');
-      setLink('');
-      setImageUrl('');
-      setCategory('OTHER');
-      setPriority('MEDIUM');
-      setContext('JUST_WANT');
-      setIsSurpriseFriendly(true);
-      setSizeOverride('');
       onClose();
     } catch (err: any) {
-      toast.error(err.message || 'Ошибка создания желания');
+      toast.error(err.message || 'Ошибка сохранения желания');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <Dialog isOpen={isOpen} onClose={onClose} title="Добавить карточку желания">
+    <Dialog isOpen={isOpen} onClose={onClose} title={wishToEdit ? 'Редактировать желание' : 'Добавить карточку желания'}>
       <form onSubmit={handleSubmit} className="space-y-4 max-h-[75vh] overflow-y-auto pr-1">
         <Input
           label="Название желания *"
@@ -257,7 +276,7 @@ export function CreateWishModal({ isOpen, onClose, onSubmit, onUploadImage }: Cr
             Отмена
           </Button>
           <Button type="submit" variant="primary" className="flex-1" disabled={isSubmitting || !title.trim()}>
-            {isSubmitting ? 'Сохранение...' : 'Добавить желание'}
+            {isSubmitting ? 'Сохранение...' : wishToEdit ? 'Сохранить изменения' : 'Добавить желание'}
           </Button>
         </div>
       </form>

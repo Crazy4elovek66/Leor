@@ -86,15 +86,17 @@ export function WishCard({
       {/* Card Content Body */}
       <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
         <div>
+          {/* 1. Large Item Title FIRST */}
+          <h3 className="text-base font-bold text-[#F5F5F7] group-hover:text-[#D8B4B0] transition-colors line-clamp-2 leading-tight">
+            {wish.title}
+          </h3>
+
+          {/* 2. Brand Name BELOW Title */}
           {wish.brand && (
-            <div className="text-[10px] font-semibold uppercase tracking-wider text-[#D8B4B0] mb-0.5">
+            <div className="text-xs font-semibold uppercase tracking-wider text-[#D8B4B0] mt-1">
               {wish.brand}
             </div>
           )}
-
-          <h3 className="text-sm font-bold text-[#F5F5F7] group-hover:text-[#D8B4B0] transition-colors line-clamp-2 leading-tight">
-            {wish.title}
-          </h3>
 
           {wish.description && (
             <p className="text-xs text-[#A1A1AA] line-clamp-2 mt-1.5 leading-normal">
@@ -114,74 +116,65 @@ export function WishCard({
 
           {/* Reservation Status Badge (ONLY FOR CIRCLE MEMBERS, NOT OWNER) */}
           {!isOwner && (
-            <div className="flex items-center justify-between pt-1 min-h-[32px]">
-              {isLoadingState ? (
-                <div className="h-6 w-24 bg-[#26262B] rounded-full animate-pulse" />
-              ) : (
-                <span className={`text-[10px] px-2.5 py-1 rounded-full border ${resMeta.badgeClass}`}>
+            <div className="flex items-center justify-between pt-1">
+              <div className="flex items-center space-x-1.5">
+                <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full border ${resMeta.badgeClass}`}>
                   {resMeta.label}
                 </span>
-              )}
+              </div>
 
-              {/* Action buttons depending on state */}
-              {reservationState === 'AVAILABLE' && onReserve && (
+              {/* Action Buttons depending on Reservation State */}
+              {isLoadingState || isPending ? (
+                <Button size="sm" variant="ghost" disabled className="h-8 text-xs">
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-[#D8B4B0]" />
+                </Button>
+              ) : reservationState === 'AVAILABLE' ? (
                 <Button
-                  variant="outline"
                   size="sm"
-                  disabled={isPending || isLoadingState}
-                  aria-label="Забронировать этот подарок"
+                  variant="primary"
                   onClick={(e) => {
                     e.stopPropagation();
-                    onReserve(e);
+                    onReserve?.(e);
                   }}
-                  className="h-7 text-[11px] px-2.5 rounded-full border-[#D8B4B0]/40 text-[#D8B4B0] hover:bg-[#D8B4B0]/10 disabled:opacity-50"
+                  className="rounded-full px-3 text-xs h-8"
                 >
-                  {isPending ? (
-                    <Loader2 className="w-3 h-3 animate-spin mr-1" />
-                  ) : (
-                    <BookmarkCheck className="w-3 h-3 mr-1" />
-                  )}
-                  Забронировать
+                  <BookmarkCheck className="w-3.5 h-3.5 mr-1" /> Забронировать
                 </Button>
-              )}
-
-              {reservationState === 'RESERVED_BY_ME' && (
-                <div className="flex items-center space-x-1" onClick={(e) => e.stopPropagation()}>
-                  {onConfirmReservation && (
-                    <button
-                      disabled={isPending}
-                      aria-label="Подтвердить покупку"
-                      onClick={onConfirmReservation}
-                      className="p-1.5 text-[#D8B4B0] hover:text-[#F5F5F7] disabled:opacity-50 transition-colors"
-                      title="Подтвердить покупку"
-                    >
-                      {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
-                    </button>
-                  )}
-                  {onCancelReservation && (
-                    <button
-                      disabled={isPending}
-                      aria-label="Отменить бронирование"
-                      onClick={onCancelReservation}
-                      className="p-1.5 text-[#71717A] hover:text-[#C97B7B] disabled:opacity-50 transition-colors"
-                      title="Отменить бронь"
-                    >
-                      <XCircle className="w-4 h-4" />
-                    </button>
-                  )}
+              ) : reservationState === 'RESERVED_BY_ME' ? (
+                <div className="flex items-center space-x-1">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onCancelReservation?.(e);
+                    }}
+                    className="rounded-full px-2.5 text-[11px] h-8 text-[#C97B7B] border-[#C97B7B]/40 hover:bg-[#C97B7B]/10"
+                  >
+                    <XCircle className="w-3.5 h-3.5 mr-1" /> Снять
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="primary"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onConfirmReservation?.(e);
+                    }}
+                    className="rounded-full px-2.5 text-[11px] h-8"
+                  >
+                    <CheckCircle2 className="w-3.5 h-3.5 mr-1" /> Подарил
+                  </Button>
                 </div>
-              )}
+              ) : null}
             </div>
           )}
 
-          {/* Price & External Link Footer */}
-          <div className="flex items-center justify-between pt-1">
+          {/* Price & External Link Row */}
+          <div className="flex items-center justify-between pt-1 text-xs">
             {formattedPrice ? (
-              <span className="text-sm font-extrabold text-[#F5F5F7] font-mono tracking-tight">
-                {formattedPrice}
-              </span>
+              <span className="font-extrabold text-[#D8B4B0] font-mono text-sm">{formattedPrice}</span>
             ) : (
-              <span className="text-xs text-[#71717A] italic">Цена не указана</span>
+              <span className="text-[11px] text-[#A1A1AA]">Без указания цены</span>
             )}
 
             {wish.link && (
@@ -189,12 +182,11 @@ export function WishCard({
                 href={wish.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Открыть внешнюю ссылку на страницу товара"
                 onClick={(e) => e.stopPropagation()}
-                className="p-1.5 text-[#A1A1AA] hover:text-[#D8B4B0] focus:ring-1 focus:ring-[#D8B4B0] transition-colors rounded-lg hover:bg-[#26262B]"
-                title="Открыть ссылку на товар"
+                className="text-[#A1A1AA] hover:text-[#D8B4B0] transition-colors p-1"
+                aria-label="Открыть ссылку на товар"
               >
-                <ExternalLink className="w-4 h-4" />
+                <ExternalLink className="w-3.5 h-3.5" />
               </a>
             )}
           </div>

@@ -7,11 +7,13 @@ export function useGiftProfile(userId?: string, profileId?: string) {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchProfile = useCallback(async () => {
+  const fetchProfile = useCallback(async (silent = false) => {
     if (!userId || !profileId) return;
 
     try {
-      setIsLoading(true);
+      if (!silent) {
+        setIsLoading(true);
+      }
       setError(null);
 
       // 1. Fetch User Base Info
@@ -98,7 +100,9 @@ export function useGiftProfile(userId?: string, profileId?: string) {
       console.error('Failed to load GiftProfile:', err);
       setError(err.message || 'Ошибка загрузки профиля');
     } finally {
-      setIsLoading(false);
+      if (!silent) {
+        setIsLoading(false);
+      }
     }
   }, [userId, profileId]);
 
@@ -120,28 +124,45 @@ export function useGiftProfile(userId?: string, profileId?: string) {
       .eq('id', profileId);
 
     if (err) throw err;
-    await fetchProfile();
+    await fetchProfile(true);
   };
 
-  // Add or Remove Interest
+  // Add or Remove Interest with Optimistic UI Update
   const toggleInterest = async (category: TasteCategory, title: string) => {
     if (!profileId || !profile) return;
 
     const existing = profile.tastes.find((t) => t.category === category && t.title === title);
 
-    if (existing && existing.id) {
-      const { error: err } = await fromTable('taste_items').delete().eq('id', existing.id);
-      if (err) throw err;
-    } else {
-      const { error: err } = await fromTable('taste_items').insert({
-        profile_id: profileId,
-        category,
-        title,
-      });
-      if (err) throw err;
-    }
+    // Optimistic Update
+    setProfile((prev) => {
+      if (!prev) return prev;
+      let newTastes: TasteItem[];
+      if (existing) {
+        newTastes = prev.tastes.filter((t) => !(t.category === category && t.title === title));
+      } else {
+        newTastes = [...prev.tastes, { category, title, weight: 1.0 }];
+      }
+      return { ...prev, tastes: newTastes };
+    });
 
-    await fetchProfile();
+    try {
+      if (existing && existing.id) {
+        const { error: err } = await fromTable('taste_items').delete().eq('id', existing.id);
+        if (err) throw err;
+      } else {
+        const { error: err } = await fromTable('taste_items').insert({
+          profile_id: profileId,
+          category,
+          title,
+        });
+        if (err) throw err;
+      }
+      await fetchProfile(true);
+    } catch (err) {
+      // Revert on error
+      await fetchProfile(true);
+      throw err;
+    }
   };
 
   // Upsert Size
@@ -163,7 +184,7 @@ export function useGiftProfile(userId?: string, profileId?: string) {
       });
     }
 
-    await fetchProfile();
+    await fetchProfile(true);
   };
 
   return {

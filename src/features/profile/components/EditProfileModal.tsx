@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog } from '@/components/ui/dialog';
 import { BasicInfoForm } from './BasicInfoForm';
 import { InterestsGrid } from './InterestsGrid';
@@ -9,6 +9,7 @@ interface EditProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
   profile: FullGiftProfile;
+  initialTab?: 'info' | 'interests' | 'sizes';
   onUpdateBaseProfile: (data: { bio: string; city: string; birthDate: string }) => Promise<void>;
   onToggleInterest: (category: TasteCategory, title: string) => Promise<void>;
   onSaveSize: (category: SizeCategory, value: string) => Promise<void>;
@@ -18,11 +19,18 @@ export function EditProfileModal({
   isOpen,
   onClose,
   profile,
+  initialTab = 'info',
   onUpdateBaseProfile,
   onToggleInterest,
   onSaveSize,
 }: EditProfileModalProps) {
-  const [activeTab, setActiveTab] = useState<'info' | 'interests' | 'sizes'>('info');
+  const [activeTab, setActiveTab] = useState<'info' | 'interests' | 'sizes'>(initialTab);
+
+  useEffect(() => {
+    if (isOpen) {
+      setActiveTab(initialTab);
+    }
+  }, [isOpen, initialTab]);
 
   return (
     <Dialog isOpen={isOpen} onClose={onClose} title="Редактировать Gift Profile">
