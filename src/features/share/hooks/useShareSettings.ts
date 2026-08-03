@@ -81,6 +81,13 @@ export function useShareSettings(profileId?: string) {
 
   const updateVisibility = async (basic: boolean, interests: boolean, wishlist: boolean, sizes: boolean) => {
     if (!profileId) return;
+
+    // Client-side validation: at least one section must remain visible
+    if (!basic && !interests && !wishlist && !sizes) {
+      toast.error('Выделите минимум один раздел для показа по публичной ссылке');
+      return;
+    }
+
     try {
       setIsPending(true);
       const { data, error } = await (supabase as any).rpc('update_public_share_visibility', {

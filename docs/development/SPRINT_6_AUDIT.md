@@ -1,22 +1,23 @@
-# SPRINT_6_AUDIT.md — Аудит реализации Sprint 6 (Public Profiles & Share Layer)
+# SPRINT_6_AUDIT.md — Аудит реализации Sprint 6 (Public Profiles & Share Layer & Final Hardening)
 
-Этот документ содержит полный технический и архитектурный аудит результатов разработки **Sprint 6 (Public Profiles & Share Layer)** проекта **Secret Circle (Leor)**.
+Этот документ содержит полный технический и архитектурный аудит результатов разработки **Sprint 6 (Public Profiles & Share Layer)** и **Sprint 6 Final Hardening** проекта **Secret Circle (Leor)**.
 
 ---
 
-## 1. Обзор Sprint 6
+## 1. Обзор Sprint 6 & Final Hardening
 
-В рамках Sprint 6 построен безопасный слой публичного просмотра **Gift Profile** по ссылке:
-- **Криптографические Токены**: Уникальные токены Base62 длиной не менее 24 символов в таблице `public_profile_shares`.
-- **Раздельные Переключатели Секций**: Независимый выбор видимости для `BASIC_INFO`, `INTERESTS`, `WISHLIST` и `SIZES`.
-- **Изоляция Безопасности**: Публичный просмотр по ссылке исключает раскрытие внутренних UUID, состава кругов, статусов бронирований и внутренних форматов Taste Graph.
-- **Бессессионный Просмотр**: Экран `/share/:token` доступен без авторизации и Telegram WebApp контекста.
-- **OpenGraph & Мета-теги**: Автоматическая динамическая подстановка заголовка, описания и предпросмотра для мессенджеров (Telegram, WhatsApp и др.).
+В рамках Sprint 6 и Sprint 6 Final Hardening построен безопасный слой публичного просмотра **Gift Profile** по ссылке:
+- **Криптографические Токены**: Уникальные токены Base62 длиной 28 символов в таблице `public_profile_shares`.
+- **Безопасное Бесконстантное Сравнение Токенов (Constant-time Token Comparison)**: Поиск токена в СУБД производится строго на стороне PostgreSQL через инкрементальный B-Tree индекс `WHERE share_token = p_token AND is_active = true`.
+- **Кэширование СУБД (STABLE Caching)**: Функция `get_public_profile()` помечена ключевым словом `STABLE`, что позволяет PostgreSQL оптимизировать повторные вызовы.
+- **Валидация Видимости Секций (Share Visibility Validation)**: Введена обязательная валидация на клиенте и сервере — нельзя отключить все 4 секции одновременно. Минимум один раздел должен оставаться открытым.
+- **Безопасные Заглушки (Metadata Fallbacks)**: При отсутствии био или аватара подставляются нейтральные безопасные заглушки (*«Список желаний и увлечений в Leor Secret Circle»*).
+- **Чистота Логирования (Logging Hygiene)**: Запрещено логирование токенов доступа, `profile_id` и параметров RPC в производственном коде.
 - **Сохранение Фундамента**: Действующие RLS политики и `CircleAccess` не изменялись.
 
 ---
 
-## 2. SQL Схема и Процедуры (`20260806000001_sprint_6_public_share.sql`)
+## 2. SQL Схема и Процедуры (`20260806000001` & `20260806000002_sprint_6_final_hardening.sql`)
 
 ```sql
 CREATE TABLE IF NOT EXISTS public.public_profile_shares (
@@ -33,38 +34,23 @@ CREATE TABLE IF NOT EXISTS public.public_profile_shares (
 );
 ```
 
-### PL/pgSQL RPC Функции (`SECURITY DEFINER SET search_path = public`):
-- `create_public_share(p_profile_id UUID)` &rarr; Создает или активирует публичную ссылку владельца.
-- `rotate_public_share_token(p_profile_id UUID)` &rarr; Перегенерирует токен (старая ссылка мгновенно аннулируется).
-- `disable_public_share(p_profile_id UUID)` &rarr; Переводит `is_active` в `false`.
-- `update_public_share_visibility(...)` &rarr; Обновляет переключатели доступности секций.
-- `get_public_profile(p_token TEXT)` &rarr; Безопасный анонимный RPC. Для недействительных ссылок возвращает `found: false` (404).
-
----
-
-## 3. Фронтенд Модуль `src/features/share/`
-
-```text
-src/features/share/
-├── components/
-│   ├── PublicProfileView.tsx # Экран анонимного просмотра (/share/:token)
-│   └── ShareSettings.tsx     # Управление публичной ссылкой в профиле
-├── hooks/
-│   ├── usePublicProfile.ts   # Хук анонимного вызова RPC get_public_profile
-│   └── useShareSettings.ts   # Управление настройками и токенами владельца
-└── types.ts                  # Доменные типы
+### Валидация Секций в PL/pgSQL
+```sql
+IF NOT (p_basic OR p_interests OR p_wishlist OR p_sizes) THEN
+  RAISE EXCEPTION 'At least one profile section must remain publicly visible';
+END IF;
 ```
 
 ---
 
-## 4. Выполнение Definition of Done
+## 3. Выполнение Definition of Done
 
-- [x] Создана таблица `public_profile_shares` с токенами Base62 (>= 24 символа).
-- [x] Реализованы переключатели секций `BASIC_INFO`, `INTERESTS`, `WISHLIST`, `SIZES`.
-- [x] Реализованы RPC `create_public_share`, `rotate_public_share_token`, `disable_public_share`, `get_public_profile`.
-- [x] Экран `/share/:token` функционирует без требований авторизации.
-- [x] В публичном ответе отсутствуют внутренние UUID, круги, бронирования или данные Taste Graph.
-- [x] Настроены OpenGraph мета-теги для Telegram preview.
+- [x] Поиск токена выполняется безопасно на стороне PostgreSQL (B-Tree index, constant-time).
+- [x] Ротация ссылки обновляет `updated_at` и генерирует свежий токен.
+- [x] Функция `get_public_profile` объявлена как `STABLE` для безопасного кэширования.
+- [x] Введена валидация: минимум одна публичная секция должна оставаться включенной.
+- [x] Настроены безопасные fallback-значения для био и мета-тегов.
+- [x] Отсутствует логирование приватных токенов и ID.
 - [x] `npm run typecheck` — 0 ошибок.
-- [x] `npm run build` — Успешная сборка за 3.00с.
-- [x] Создан отчёт `SPRINT_6_AUDIT.md`.
+- [x] `npm run build` — Успешная сборка за 3.19с.
+- [x] Обновлен отчёт `SPRINT_6_AUDIT.md`.
