@@ -3,7 +3,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useShareSettings } from '../hooks/useShareSettings';
-import { Share2, Copy, RefreshCw, Power, Eye, Check, Loader2 } from 'lucide-react';
+import { Share2, Copy, RefreshCw, Power, Eye, Check, Loader2, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface ShareSettingsProps {
@@ -12,23 +12,36 @@ interface ShareSettingsProps {
 
 export function ShareSettings({ profileId }: ShareSettingsProps) {
   const { config, isLoading, isPending, createShareLink, rotateToken, disableShare, updateVisibility } = useShareSettings(profileId);
-  const [copied, setCopied] = useState<boolean>(false);
+  const [copiedTg, setCopiedTg] = useState<boolean>(false);
+  const [copiedWeb, setCopiedWeb] = useState<boolean>(false);
 
   if (isLoading) {
     return <div className="h-24 bg-[#17171A] border border-[#26262B] rounded-[24px] animate-pulse" />;
   }
 
   const botName = import.meta.env.VITE_TELEGRAM_BOT_NAME || 'iLeorBot';
-  const shareUrl = config?.share_token
+  const telegramUrl = config?.share_token
     ? `https://t.me/${botName}?startapp=share_${config.share_token}`
     : '';
 
-  const handleCopy = () => {
-    if (!shareUrl) return;
-    navigator.clipboard.writeText(shareUrl);
-    setCopied(true);
-    toast.success('Публичная Telegram-ссылка скопирована!');
-    setTimeout(() => setCopied(false), 2000);
+  const webUrl = config?.share_token
+    ? `${window.location.origin}/share/${config.share_token}`
+    : '';
+
+  const handleCopyTg = () => {
+    if (!telegramUrl) return;
+    navigator.clipboard.writeText(telegramUrl);
+    setCopiedTg(true);
+    toast.success('Telegram-ссылка скопирована!');
+    setTimeout(() => setCopiedTg(false), 2000);
+  };
+
+  const handleCopyWeb = () => {
+    if (!webUrl) return;
+    navigator.clipboard.writeText(webUrl);
+    setCopiedWeb(true);
+    toast.success('Прямая Web-ссылка скопирована!');
+    setTimeout(() => setCopiedWeb(false), 2000);
   };
 
   return (
@@ -48,17 +61,40 @@ export function ShareSettings({ profileId }: ShareSettingsProps) {
       <Card className="p-5 bg-[#17171A] border-[#26262B] space-y-4 rounded-[24px]">
         {config?.is_active ? (
           <div className="space-y-4">
-            {/* Share URL display & Copy button */}
-            <div className="flex items-center space-x-2">
-              <input
-                type="text"
-                readOnly
-                value={shareUrl}
-                className="flex-1 bg-[#0F0F10] border border-[#26262B] rounded-xl px-3 py-2 text-xs font-mono text-[#D8B4B0] focus:outline-none"
-              />
-              <Button variant="secondary" size="sm" onClick={handleCopy} className="shrink-0">
-                {copied ? <Check className="w-4 h-4 text-[#D8B4B0]" /> : <Copy className="w-4 h-4" />}
-              </Button>
+            {/* 1. Telegram Bot Direct Link */}
+            <div className="space-y-1">
+              <label className="text-[11px] font-semibold text-[#A1A1AA] block">
+                1. Ссылка для Telegram (Mini App):
+              </label>
+              <div className="flex items-center space-x-2">
+                <input
+                  type="text"
+                  readOnly
+                  value={telegramUrl}
+                  className="flex-1 bg-[#0F0F10] border border-[#26262B] rounded-xl px-3 py-2 text-xs font-mono text-[#D8B4B0] focus:outline-none truncate"
+                />
+                <Button variant="secondary" size="sm" onClick={handleCopyTg} className="shrink-0">
+                  {copiedTg ? <Check className="w-4 h-4 text-[#D8B4B0]" /> : <Copy className="w-4 h-4" />}
+                </Button>
+              </div>
+            </div>
+
+            {/* 2. Direct Web Link Fallback */}
+            <div className="space-y-1">
+              <label className="text-[11px] font-semibold text-[#A1A1AA] block">
+                2. Прямая Web-ссылка (для браузеров):
+              </label>
+              <div className="flex items-center space-x-2">
+                <input
+                  type="text"
+                  readOnly
+                  value={webUrl}
+                  className="flex-1 bg-[#0F0F10] border border-[#26262B] rounded-xl px-3 py-2 text-xs font-mono text-[#D8B4B0] focus:outline-none truncate"
+                />
+                <Button variant="secondary" size="sm" onClick={handleCopyWeb} className="shrink-0">
+                  {copiedWeb ? <Check className="w-4 h-4 text-[#D8B4B0]" /> : <ExternalLink className="w-4 h-4" />}
+                </Button>
+              </div>
             </div>
 
             {/* Section Visibility Toggles */}
@@ -139,7 +175,7 @@ export function ShareSettings({ profileId }: ShareSettingsProps) {
         ) : (
           <div className="text-center py-2 space-y-3">
             <p className="text-xs text-[#A1A1AA]">
-              Создайте публичную Telegram-ссылку, чтобы делиться вишлистом без открытия сторонних браузеров.
+              Создайте публичную ссылку, чтобы делиться вишлистом в Telegram или в браузере.
             </p>
             <Button variant="primary" size="sm" onClick={createShareLink} disabled={isPending}>
               {isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" /> : <Share2 className="w-3.5 h-3.5 mr-1.5" />}

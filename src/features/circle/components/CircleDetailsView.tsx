@@ -84,7 +84,7 @@ export function CircleDetailsView({ currentUserId }: CircleDetailsViewProps) {
 
       {/* Circle Banner Card */}
       <Card className="p-6 bg-[#17171A] border-[#26262B] relative overflow-hidden">
-        <div className="flex items-start justify-between">
+        <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <div className="w-14 h-14 rounded-2xl bg-[#26262B] border border-[#383843] flex items-center justify-center text-[#D8B4B0] font-bold text-xl overflow-hidden shrink-0">
               {circle.avatarUrl ? (

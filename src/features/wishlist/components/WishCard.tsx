@@ -72,15 +72,15 @@ export function WishCard({
         )}
 
         {/* Priority Badge Overlay */}
-        <div className="absolute top-3 right-3 z-10">
-          <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border backdrop-blur-md shadow-md ${priorityMeta.colorClass}`}>
+        <div className="absolute top-3 right-3 z-10 bg-[#0F0F10] rounded-full p-[1px] shadow-[0_4px_12px_rgba(0,0,0,0.85)]">
+          <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border backdrop-blur-md ${priorityMeta.colorClass}`}>
             {priorityMeta.label}
           </span>
         </div>
 
         {/* Context Tag Overlay */}
-        <div className="absolute bottom-3 left-3 z-10">
-          <span className="text-[10px] font-semibold bg-[#0F0F10]/95 text-[#F5F5F7] px-2.5 py-1 rounded-full border border-[#383843] backdrop-blur-md shadow-md flex items-center space-x-1">
+        <div className="absolute bottom-3 left-3 z-10 bg-[#0F0F10] rounded-full p-[1px] shadow-[0_4px_12px_rgba(0,0,0,0.85)]">
+          <span className="text-[10px] font-semibold bg-[#0F0F10]/95 text-[#F5F5F7] px-2.5 py-1 rounded-full border border-[#383843] backdrop-blur-md flex items-center space-x-1">
             <Sparkles className="w-2.5 h-2.5 text-[#D8B4B0]" />
             <span>{contextLabel}</span>
           </span>
