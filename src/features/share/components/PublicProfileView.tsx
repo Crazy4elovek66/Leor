@@ -8,6 +8,7 @@ import { usePublicProfile } from '../hooks/usePublicProfile';
 import type { WishCategory, WishPriority } from '@/features/wishlist/types';
 import { WISH_CATEGORY_META, WISH_PRIORITY_META } from '@/features/wishlist/types';
 import { Gift, MapPin, Calendar, Sparkles, Shirt, ExternalLink, ShieldAlert } from 'lucide-react';
+import { RelationshipSummary } from '@/features/relationship/components/RelationshipSummary';
 
 export function PublicProfileView() {
   const { token } = useParams<{ token: string }>();
@@ -102,6 +103,9 @@ export function PublicProfileView() {
           </div>
         )}
       </Card>
+
+      {/* Relationship Summary Block */}
+      {data.basic_info && <RelationshipSummary profileId={token || ''} />}
 
       {/* Public Wishlist Section */}
       {show_wishlist && (

@@ -11,6 +11,7 @@ import { useWishReservations } from '@/features/reservation/hooks/useWishReserva
 import { WishlistGrid } from '@/features/wishlist/components/WishlistGrid';
 import { WishDetailsModal } from '@/features/wishlist/components/WishDetailsModal';
 import { TasteGraphView } from '@/features/taste/components/TasteGraphView';
+import { RelationshipSummary } from '@/features/relationship/components/RelationshipSummary';
 import { resolveWishSize } from '@/features/wishlist/utils/resolveWishSize';
 import type { WishItem } from '@/features/wishlist/types';
 import { formatDate } from '@/lib/utils';
@@ -112,6 +113,9 @@ export function MemberProfileView() {
           </div>
         )}
       </Card>
+
+      {/* Relationship Intelligence Summary Block */}
+      {profileId && <RelationshipSummary profileId={profileId} />}
 
       {/* Wishlist Section */}
       <div className="space-y-3">

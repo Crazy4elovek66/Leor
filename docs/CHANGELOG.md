@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.1.0] - 2026-08-08 — Sprint 8.1 (Relationship Intelligence Engine)
+
+### Added
+- **Relationship Intelligence Tables (`relationship_scores`, `relationship_events`)**: Created analytical tables for canonical pair score tracking with constraints and triggers.
+- **RPC Functions (`calculate_relationship_strength`, `rebuild_relationship_scores`, `get_relationship_summary`)**: Developed PostgreSQL analytical functions computing strength, gift affinity, memory affinity, taste similarity, and years known.
+- **Automatic SQL Triggers**: Enforced automatic relationship score updates upon memory insertion, gift confirmations, circle joins/leaves, and Taste Graph changes.
+- **Frontend Module (`src/features/relationship/`)**: Built `RelationshipSummary.tsx` component, `useRelationshipSummary.ts` hook, and domain interfaces.
+- **Profile Integration**: Embedded `RelationshipSummary` block into `/profile/:id` and public profile views.
+
+---
+
 ## [7.0.0] - 2026-08-07 — Sprint 7 (Memories & Relationship Timeline)
 
 ### Added
@@ -20,14 +31,3 @@ All notable changes to this project will be documented in this file.
 - **Security-focused RPC Functions**: Implemented `create_public_share`, `rotate_public_share_token`, `disable_public_share`, `update_public_share_visibility`, and unauthenticated `get_public_profile`.
 - **Public Share View (`/share/:token`)**: Developed unauthenticated screen displaying public profile information, OpenGraph meta tags, and public wishlist items without exposing internal IDs, circles, or reservations.
 - **Share Management Component (`ShareSettings`)**: Integrated share link creation, one-click copying, token rotation, disabling, and section visibility toggles into `/profile`.
-
----
-
-## [5.1.0] - 2026-08-05 — Sprint 5.1 (Discovery Hardening)
-
-### Added & Hardened
-- **Recommendation Diversity & Circle Balance**: Enforced maximum candidate limits per category (max 3) and per owner (max 2) using PostgreSQL window functions.
-- **Freshness Boost**: Added dynamic score boost of up to +10% for wishes created in the last 14 days.
-- **Stable Ordering**: Guaranteed deterministic sorting using `score DESC`, `freshness_boost DESC`, `created_at DESC`.
-- **Explainability Optimization**: Limited `reasons` to max 3 unique, prioritized entries (Brand &rarr; Category &rarr; Taste Graph &rarr; Circle name).
-- **Performance Indexes**: Added `idx_wishes_user_status_created` and `idx_circle_members_user_circle` composite indexes.
