@@ -3,8 +3,12 @@
 // creates/retrieves Supabase Auth user & public tables via Service Role (supabaseAdmin),
 // and returns access_token + refresh_token.
 
+// @ts-ignore
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+// @ts-ignore
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.48.1";
+
+declare const Deno: any;
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -105,7 +109,7 @@ async function validateTelegramInitData(
   }
 }
 
-serve(async (req) => {
+serve(async (req: any) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
@@ -202,7 +206,7 @@ serve(async (req) => {
 
       if (createError || !createData.user) {
         const { data: listData } = await supabaseAdmin.auth.admin.listUsers();
-        const existingAuthUser = listData?.users?.find((u) => u.email === email);
+        const existingAuthUser = listData?.users?.find((u: any) => u.email === email);
         
         if (existingAuthUser) {
           await supabaseAdmin.auth.admin.updateUserById(existingAuthUser.id, { password });
