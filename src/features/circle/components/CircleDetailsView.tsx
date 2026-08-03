@@ -95,8 +95,11 @@ export function CircleDetailsView({ currentUserId }: CircleDetailsViewProps) {
             </div>
 
             <div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 flex-wrap gap-y-1">
                 <h2 className="text-lg font-bold text-[#F5F5F7]">{circle.name}</h2>
+                <Badge variant={isOwner ? 'accent' : 'secondary'} className="text-[10px] uppercase shrink-0">
+                  {isOwner ? 'Создатель' : 'Участник'}
+                </Badge>
                 {circle.isArchived && (
                   <Badge variant="outline" className="text-[10px] text-[#A1A1AA] border-[#383843]">
                     <Lock className="w-2.5 h-2.5 mr-1" /> Архивирован
@@ -106,10 +109,6 @@ export function CircleDetailsView({ currentUserId }: CircleDetailsViewProps) {
               <p className="text-xs text-[#A1A1AA] mt-0.5">{members.length} участников</p>
             </div>
           </div>
-
-          <Badge variant={isOwner ? 'accent' : 'secondary'} className="text-[10px] uppercase">
-            {isOwner ? 'Создатель' : 'Участник'}
-          </Badge>
         </div>
 
         {/* Invite Code Bar (Owner only or active) */}

@@ -26,7 +26,7 @@ export function Dialog({ isOpen, onClose, title, children }: DialogProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 pt-[calc(env(safe-area-inset-top,20px)+28px)] bg-black/70 backdrop-blur-sm transition-opacity duration-200">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 pt-[calc(env(safe-area-inset-top,24px)+36px)] bg-black/70 backdrop-blur-sm transition-opacity duration-200">
       <div
         className="w-full max-w-lg bg-[#17171A] border border-[#26262B] rounded-t-[28px] sm:rounded-[28px] p-6 shadow-2xl transition-transform duration-200 max-h-[85vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}

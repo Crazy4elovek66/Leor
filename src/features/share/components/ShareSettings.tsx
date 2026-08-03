@@ -20,8 +20,9 @@ export function ShareSettings({ profileId }: ShareSettingsProps) {
   }
 
   const botName = import.meta.env.VITE_TELEGRAM_BOT_NAME || 'iLeorBot';
+  const webAppShortName = import.meta.env.VITE_TELEGRAM_WEBAPP_SHORT_NAME || 'circleapp';
   const telegramUrl = config?.share_token
-    ? `https://t.me/${botName}?startapp=share_${config.share_token}`
+    ? `https://t.me/${botName}/${webAppShortName}?startapp=share_${config.share_token}`
     : '';
 
   const webUrl = config?.share_token

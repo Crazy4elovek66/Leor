@@ -16,7 +16,55 @@ export function useGiftProfile(userId?: string, profileId?: string) {
       }
       setError(null);
 
-      // 1. Fetch User Base Info
+      // 1. Try single RPC call get_full_profile for maximum speed
+      const { data: rpcData, error: rpcErr } = await (supabase.rpc as any)('get_full_profile', {
+        p_user_id: userId,
+        p_profile_id: profileId,
+      });
+
+      if (!rpcErr && rpcData && rpcData.user && rpcData.profile) {
+        const dbUser = rpcData.user;
+        const dbProfile = rpcData.profile;
+        const dbSizes = rpcData.sizes || [];
+        const dbTastes = rpcData.tastes || [];
+        const completenessScore = typeof rpcData.completeness === 'number' ? rpcData.completeness : 0;
+
+        const sizes: ProfileSizeItem[] = dbSizes.map((s: any) => ({
+          id: s.id,
+          category: s.category as any,
+          value: s.value,
+          visibility: s.visibility as any,
+        }));
+
+        const tastes: TasteItem[] = dbTastes.map((t: any) => ({
+          id: t.id,
+          category: t.category as any,
+          title: t.title,
+          weight: t.weight,
+        }));
+
+        setProfile({
+          id: dbProfile.id,
+          userId: dbProfile.user_id,
+          bio: dbProfile.bio,
+          birthDate: dbProfile.birth_date,
+          city: dbProfile.city,
+          user: {
+            id: dbUser.id,
+            telegramId: Number(dbUser.telegram_id),
+            firstName: dbUser.first_name,
+            lastName: dbUser.last_name,
+            username: dbUser.username,
+            avatarUrl: dbUser.avatar_url,
+          },
+          sizes,
+          tastes,
+          completeness: completenessScore,
+        });
+        return;
+      }
+
+      // Fallback: Fetch queries individually if RPC is unavailable
       const { data: dbUser, error: userError } = await fromTable('users')
         .select('*')
         .eq('id', userId)
@@ -24,7 +72,6 @@ export function useGiftProfile(userId?: string, profileId?: string) {
 
       if (userError || !dbUser) throw userError || new Error('User not found');
 
-      // 2. Fetch GiftProfile
       const { data: dbProfile, error: profileError } = await fromTable('gift_profiles')
         .select('*')
         .eq('id', profileId)
@@ -32,26 +79,22 @@ export function useGiftProfile(userId?: string, profileId?: string) {
 
       if (profileError || !dbProfile) throw profileError || new Error('Gift profile not found');
 
-      // 3. Fetch Sizes
       const { data: dbSizes } = await fromTable('profile_sizes')
         .select('*')
         .eq('profile_id', profileId);
 
-      // 4. Fetch Tastes (Interests)
       const { data: dbTastes } = await fromTable('taste_items')
         .select('*')
         .eq('profile_id', profileId);
 
-      // 5. Fetch Profile Completeness % from SQL Function (calculate_profile_completeness)
       let completenessScore = 0;
-      const { data: rpcScore, error: rpcError } = await (supabase.rpc as any)('calculate_profile_completeness', {
+      const { data: rpcScore, error: rpcScoreError } = await (supabase.rpc as any)('calculate_profile_completeness', {
         p_profile_id: profileId,
       });
 
-      if (!rpcError && typeof rpcScore === 'number') {
+      if (!rpcScoreError && typeof rpcScore === 'number') {
         completenessScore = rpcScore;
       } else {
-        // Client fallback calculation if rpc is not available locally
         let score = 0;
         if (dbUser.first_name) score += 10;
         if (dbProfile.bio) score += 10;

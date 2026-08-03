@@ -61,8 +61,8 @@ export function WishCard({
               alt={wish.title}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             />
-            {/* Dark gradient overlay for 100% badge contrast on light cover images */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/60 pointer-events-none" />
+            {/* Subtle gradient overlay for image contrast */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/40 pointer-events-none" />
           </>
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-[#26262B] to-[#1D1D21] flex flex-col items-center justify-center text-[#D8B4B0]">
@@ -72,15 +72,15 @@ export function WishCard({
         )}
 
         {/* Priority Badge Overlay */}
-        <div className="absolute top-3 right-3 z-10 bg-[#0F0F10] rounded-full p-[1px] shadow-[0_4px_12px_rgba(0,0,0,0.85)]">
-          <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border backdrop-blur-md ${priorityMeta.colorClass}`}>
+        <div className="absolute top-3 right-3 z-10">
+          <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border backdrop-blur-md shadow-sm ${priorityMeta.colorClass}`}>
             {priorityMeta.label}
           </span>
         </div>
 
         {/* Context Tag Overlay */}
-        <div className="absolute bottom-3 left-3 z-10 bg-[#0F0F10] rounded-full p-[1px] shadow-[0_4px_12px_rgba(0,0,0,0.85)]">
-          <span className="text-[10px] font-semibold bg-[#0F0F10]/95 text-[#F5F5F7] px-2.5 py-1 rounded-full border border-[#383843] backdrop-blur-md flex items-center space-x-1">
+        <div className="absolute bottom-3 left-3 z-10">
+          <span className="text-[10px] font-semibold bg-[#17171A]/80 text-[#F5F5F7] px-2.5 py-1 rounded-full border border-white/10 backdrop-blur-md shadow-sm flex items-center space-x-1">
             <Sparkles className="w-2.5 h-2.5 text-[#D8B4B0]" />
             <span>{contextLabel}</span>
           </span>

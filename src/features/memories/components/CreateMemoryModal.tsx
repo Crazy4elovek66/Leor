@@ -63,7 +63,7 @@ export function CreateMemoryModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#0F0F10]/80 backdrop-blur-sm flex items-center justify-center p-4 pt-[calc(env(safe-area-inset-top,20px)+28px)]">
+    <div className="fixed inset-0 z-50 bg-[#0F0F10]/80 backdrop-blur-sm flex items-center justify-center p-4 pt-[calc(env(safe-area-inset-top,24px)+36px)]">
       <Card className="w-full max-w-md bg-[#17171A] border-[#26262B] p-6 space-y-4 rounded-[28px] overflow-hidden">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
