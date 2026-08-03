@@ -15,6 +15,7 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER STABLE SET search_path = public;
 
 -- 2. Update can_view_profile with sectional privacy support & hardened search_path
+DROP FUNCTION IF EXISTS public.can_view_profile(UUID) CASCADE;
 CREATE OR REPLACE FUNCTION public.can_view_profile(
   p_profile_id UUID,
   p_section TEXT DEFAULT NULL
@@ -174,7 +175,7 @@ CREATE POLICY "anti_gift_preferences_delete_policy" ON public.anti_gift_preferen
   FOR DELETE USING (public.can_view_profile(profile_id));
 
 -- 5. Create gift_profile_public View for Future Wishlist / Social Queries
-CREATE OR REPLACE VIEW public.gift_profile_public AS
+CREATE OR REPLACE VIEW public.gift_profile_public WITH (security_invoker = true) AS
 SELECT 
   gp.id AS profile_id,
   gp.user_id,

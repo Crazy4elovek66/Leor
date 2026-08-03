@@ -18,9 +18,11 @@ BEGIN
 END $$;
 
 -- 2. Convert text columns to ENUMs safely
+ALTER TABLE public.profile_sizes ALTER COLUMN visibility DROP DEFAULT;
 ALTER TABLE public.profile_sizes 
   ALTER COLUMN category TYPE public.size_category USING category::public.size_category,
   ALTER COLUMN visibility TYPE public.visibility_level USING visibility::public.visibility_level;
+ALTER TABLE public.profile_sizes ALTER COLUMN visibility SET DEFAULT 'CIRCLE'::public.visibility_level;
 
 ALTER TABLE public.taste_items 
   ALTER COLUMN category TYPE public.taste_category USING category::public.taste_category;

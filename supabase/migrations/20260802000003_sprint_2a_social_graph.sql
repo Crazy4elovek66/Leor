@@ -69,6 +69,11 @@ CREATE INDEX IF NOT EXISTS idx_circle_accesses_circle_section ON public.circle_a
 CREATE INDEX IF NOT EXISTS idx_circles_owner ON public.circles(owner_id);
 
 -- 5. Updated check_circle_access and can_view_profile Functions
+DROP FUNCTION IF EXISTS public.check_circle_access(UUID, TEXT) CASCADE;
+DROP FUNCTION IF EXISTS public.check_circle_access(UUID, public.profile_section) CASCADE;
+DROP FUNCTION IF EXISTS public.can_view_profile(UUID, TEXT) CASCADE;
+DROP FUNCTION IF EXISTS public.can_view_profile(UUID, public.profile_section) CASCADE;
+
 CREATE OR REPLACE FUNCTION public.check_circle_access(
   p_profile_id UUID,
   p_section public.profile_section DEFAULT NULL

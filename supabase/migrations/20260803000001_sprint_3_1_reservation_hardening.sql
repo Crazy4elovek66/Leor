@@ -44,7 +44,7 @@ CREATE INDEX IF NOT EXISTS idx_gift_reservations_reserver ON public.gift_reserva
 CREATE INDEX IF NOT EXISTS idx_gift_reservations_status ON public.gift_reservations(status);
 
 -- 6. SQL View: wish_reservation_status (Aggregated, DOES NOT CONTAIN reserved_by)
-CREATE OR REPLACE VIEW public.wish_reservation_status AS
+CREATE OR REPLACE VIEW public.wish_reservation_status WITH (security_invoker = true) AS
 SELECT 
   gr.wish_id,
   true AS has_reservation,
