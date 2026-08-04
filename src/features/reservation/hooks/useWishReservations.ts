@@ -27,16 +27,33 @@ export function useWishReservations(wishIds: string[]) {
     }
   }, []);
 
-  // Fetch state for all wishIds
+  // Fetch state for all wishIds — try batch RPC first, fallback to parallel individual RPCs
   const fetchAllStates = useCallback(async () => {
     if (!wishIds || wishIds.length === 0) {
       setIsLoading(false);
       return;
     }
 
+    // Deduplicate IDs to avoid duplicate requests
+    const uniqueIds = [...new Set(wishIds)];
+
     try {
       setIsLoading(true);
-      await Promise.all(wishIds.map((id) => fetchSingleState(id)));
+
+      // Try batch RPC first for performance (single round-trip)
+      const { data: batchData, error: batchErr } = await (supabase as any).rpc(
+        'get_wishes_reservation_states',
+        { p_wish_ids: uniqueIds }
+      );
+
+      if (!batchErr && batchData && typeof batchData === 'object') {
+        // Batch RPC succeeded — apply all states at once
+        setReservationStates((prev) => ({ ...prev, ...batchData }));
+        return;
+      }
+
+      // Fallback: parallel individual RPCs
+      await Promise.allSettled(uniqueIds.map((id) => fetchSingleState(id)));
     } finally {
       setIsLoading(false);
     }

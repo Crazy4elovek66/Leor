@@ -150,7 +150,7 @@ export function GiftProfileView({ userId, profileId }: GiftProfileViewProps) {
 
       {/* Wishlist Section */}
       <div className="space-y-3">
-        <div className="flex items-center justify-between px-1">
+        <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Gift className="w-4 h-4 text-[#D8B4B0]" />
             <h3 className="text-sm font-semibold text-[#F5F5F7]">Мой Wishlist</h3>
@@ -173,7 +173,7 @@ export function GiftProfileView({ userId, profileId }: GiftProfileViewProps) {
         </div>
 
         {/* Wishlist Tabs (Active vs Archived) */}
-        <div className="flex items-center space-x-2 px-1 border-b border-[#26262B] pb-2 text-xs">
+        <div className="flex items-center space-x-2 border-b border-[#26262B] pb-2 text-xs">
           <button
             onClick={() => setWishlistTab('active')}
             className={`px-3 py-1 rounded-full transition-all ${
@@ -235,7 +235,7 @@ export function GiftProfileView({ userId, profileId }: GiftProfileViewProps) {
 
       {/* Interests Section */}
       <div className="space-y-3">
-        <div className="flex items-center justify-between px-1">
+        <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Heart className="w-4 h-4 text-[#D8B4B0]" />
             <h3 className="text-sm font-semibold text-[#F5F5F7]">Интересы и вкусы</h3>
@@ -272,7 +272,7 @@ export function GiftProfileView({ userId, profileId }: GiftProfileViewProps) {
 
       {/* Sizes Section */}
       <div className="space-y-3">
-        <div className="flex items-center justify-between px-1">
+        <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Shirt className="w-4 h-4 text-[#D8B4B0]" />
             <h3 className="text-sm font-semibold text-[#F5F5F7]">Мои размеры</h3>

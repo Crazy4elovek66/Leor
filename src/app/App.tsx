@@ -18,13 +18,16 @@ export function App() {
       <BrowserRouter>
         <AppRouter />
         <Toaster
-          position="top-center"
+          position="bottom-center"
+          offset={{ bottom: 'calc(env(safe-area-inset-bottom, 16px) + 88px)' }}
           toastOptions={{
+            duration: 3500,
             style: {
               background: '#17171A',
               border: '1px solid #26262B',
               color: '#F5F5F7',
               borderRadius: '16px',
+              fontSize: '13px',
             },
           }}
         />

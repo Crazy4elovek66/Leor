@@ -13,50 +13,41 @@ export function useMemories(ownerUserId?: string) {
     try {
       setIsLoading(true);
       const { data: memRows, error: memErr } = await fromTable('memories')
-        .select('*')
+        .select(`
+          *,
+          memory_participants(
+            id,
+            user_id,
+            role,
+            users(id, first_name, last_name, avatar_url)
+          )
+        `)
+        .eq('owner_user_id', ownerUserId)
         .order('event_date', { ascending: false });
 
       if (memErr) throw memErr;
 
-      if (!memRows || memRows.length === 0) {
-        setMemories([]);
-        setIsLoading(false);
-        return;
-      }
-
-      // Fetch participants for memories
-      const memoryIds = memRows.map((m: any) => m.id);
-      const { data: partRows } = await fromTable('memory_participants')
-        .select('*, users(id, first_name, last_name, avatar_url)')
-        .in('memory_id', memoryIds);
-
-      const items: MemoryItem[] = memRows.map((m: any) => {
-        const parts = (partRows || [])
-          .filter((p: any) => p.memory_id === m.id)
-          .map((p: any) => ({
-            id: p.id,
-            user_id: p.user_id,
-            name: `${p.users?.first_name || ''} ${p.users?.last_name || ''}`.trim(),
-            avatar_url: p.users?.avatar_url || null,
-            role: p.role,
-          }));
-
-        return {
-          id: m.id,
-          owner_user_id: m.owner_user_id,
-          circle_id: m.circle_id,
-          wish_id: m.wish_id,
-          gift_reservation_id: m.gift_reservation_id,
-          title: m.title,
-          description: m.description,
-          memory_type: m.memory_type as MemoryType,
-          event_date: m.event_date,
-          cover_image_url: m.cover_image_url,
-          created_at: m.created_at,
-          updated_at: m.updated_at,
-          participants: parts,
-        };
-      });
+      const items: MemoryItem[] = (memRows || []).map((m: any) => ({
+        id: m.id,
+        owner_user_id: m.owner_user_id,
+        circle_id: m.circle_id,
+        wish_id: m.wish_id,
+        gift_reservation_id: m.gift_reservation_id,
+        title: m.title,
+        description: m.description,
+        memory_type: m.memory_type as MemoryType,
+        event_date: m.event_date,
+        cover_image_url: m.cover_image_url,
+        created_at: m.created_at,
+        updated_at: m.updated_at,
+        participants: (m.memory_participants || []).map((p: any) => ({
+          id: p.id,
+          user_id: p.user_id,
+          name: `${p.users?.first_name || ''} ${p.users?.last_name || ''}`.trim(),
+          avatar_url: p.users?.avatar_url || null,
+          role: p.role,
+        })),
+      }));
 
       setMemories(items);
     } catch (err: any) {
@@ -95,7 +86,10 @@ export function useMemories(ownerUserId?: string) {
         .select()
         .single();
 
-      if (memErr) throw memErr;
+      if (memErr) {
+        console.error('Create memory error:', memErr);
+        throw memErr;
+      }
 
       // Add participants if any
       if (payload.participant_user_ids && payload.participant_user_ids.length > 0) {
@@ -104,7 +98,8 @@ export function useMemories(ownerUserId?: string) {
           user_id: uid,
           role: 'PARTICIPANT',
         }));
-        await fromTable('memory_participants').insert(participantInserts);
+        const { error: partErr } = await fromTable('memory_participants').insert(participantInserts);
+        if (partErr) console.error('Add participants error:', partErr);
       }
 
       toast.success('Воспоминание сохранено!');

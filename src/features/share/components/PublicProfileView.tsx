@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Avatar } from '@/components/ui/avatar';
@@ -7,12 +7,14 @@ import { EmptyState } from '@/components/common/EmptyState';
 import { usePublicProfile } from '../hooks/usePublicProfile';
 import type { WishCategory, WishPriority } from '@/features/wishlist/types';
 import { WISH_CATEGORY_META, WISH_PRIORITY_META } from '@/features/wishlist/types';
-import { Gift, MapPin, Calendar, Sparkles, Shirt, ExternalLink, ShieldAlert } from 'lucide-react';
+import { Gift, MapPin, Calendar, Sparkles, Shirt, ExternalLink, ShieldAlert, BookmarkCheck } from 'lucide-react';
+import { PublicWishActionModal } from './PublicWishActionModal';
 
 export function PublicProfileView() {
   const { token } = useParams<{ token: string }>();
   const navigate = useNavigate();
   const { data, isLoading } = usePublicProfile(token);
+  const [actionModal, setActionModal] = useState<{ wish: any; type: 'reserve' | 'gift' } | null>(null);
 
   // Set OpenGraph and Document Meta Tags dynamically
   useEffect(() => {
@@ -106,7 +108,7 @@ export function PublicProfileView() {
       {/* Public Wishlist Section */}
       {show_wishlist && (
         <div className="space-y-3">
-          <div className="flex items-center space-x-2 px-1">
+          <div className="flex items-center space-x-2">
             <Gift className="w-4 h-4 text-[#D8B4B0]" />
             <h2 className="text-sm font-semibold text-[#F5F5F7]">Список желаний ({wishes?.length || 0})</h2>
           </div>
@@ -124,6 +126,7 @@ export function PublicProfileView() {
 
                 return (
                   <Card key={idx} className="p-4 bg-[#17171A] border-[#26262B] space-y-3 rounded-[24px]">
+                    {/* Wish Header */}
                     <div className="flex items-start space-x-3">
                       <div className="w-16 h-16 rounded-2xl bg-[#26262B] overflow-hidden shrink-0 flex items-center justify-center">
                         {w.image_url ? (
@@ -135,29 +138,27 @@ export function PublicProfileView() {
 
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
-                          <span className="text-[10px] text-[#D8B4B0] font-semibold uppercase tracking-wider">
+                          <span className="text-[10px] text-[#D8B4B0] font-semibold uppercase tracking-wider truncate max-w-[120px]">
                             {w.brand || categoryMeta.label}
                           </span>
-                          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${priorityMeta.colorClass}`}>
+                          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${priorityMeta.colorClass} shrink-0`}>
                             {priorityMeta.label}
                           </span>
                         </div>
-
                         <h3 className="text-sm font-bold text-[#F5F5F7] truncate mt-0.5">{w.title}</h3>
-
                         {w.description && (
                           <p className="text-xs text-[#A1A1AA] line-clamp-2 mt-0.5">{w.description}</p>
                         )}
                       </div>
                     </div>
 
+                    {/* Price + Link Row */}
                     <div className="flex items-center justify-between pt-2 border-t border-[#26262B]">
                       {formattedPrice ? (
                         <span className="text-sm font-extrabold text-[#F5F5F7] font-mono">{formattedPrice}</span>
                       ) : (
                         <span className="text-xs text-[#71717A] italic">Цена не указана</span>
                       )}
-
                       {w.link && (
                         <a
                           href={w.link}
@@ -169,6 +170,24 @@ export function PublicProfileView() {
                           <ExternalLink className="w-4 h-4" />
                         </a>
                       )}
+                    </div>
+
+                    {/* Action Buttons for Guests */}
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setActionModal({ wish: w, type: 'reserve' })}
+                        className="flex-1 flex items-center justify-center space-x-1.5 py-2.5 bg-[#D8B4B0] hover:bg-[#E8C4C0] text-[#0F0F10] font-semibold text-xs rounded-xl transition-colors"
+                      >
+                        <BookmarkCheck className="w-3.5 h-3.5 shrink-0" />
+                        <span>Забронировать</span>
+                      </button>
+                      <button
+                        onClick={() => setActionModal({ wish: w, type: 'gift' })}
+                        className="flex-1 flex items-center justify-center space-x-1.5 py-2.5 bg-[#26262B] hover:bg-[#383843] text-[#F5F5F7] font-semibold text-xs rounded-xl transition-colors border border-[#383843]"
+                      >
+                        <Gift className="w-3.5 h-3.5 shrink-0" />
+                        <span>Я дарю!</span>
+                      </button>
                     </div>
                   </Card>
                 );
@@ -185,7 +204,7 @@ export function PublicProfileView() {
       {/* Public Interests Section */}
       {show_interests && (
         <div className="space-y-3">
-          <div className="flex items-center space-x-2 px-1">
+          <div className="flex items-center space-x-2">
             <Sparkles className="w-4 h-4 text-[#D8B4B0]" />
             <h2 className="text-sm font-semibold text-[#F5F5F7]">Интересы и вкусы</h2>
           </div>
@@ -209,7 +228,7 @@ export function PublicProfileView() {
       {/* Public Sizes Section */}
       {show_sizes && (
         <div className="space-y-3">
-          <div className="flex items-center space-x-2 px-1">
+          <div className="flex items-center space-x-2">
             <Shirt className="w-4 h-4 text-[#D8B4B0]" />
             <h2 className="text-sm font-semibold text-[#F5F5F7]">Размеры</h2>
           </div>
@@ -235,6 +254,17 @@ export function PublicProfileView() {
       <div className="text-center pt-6 border-t border-[#26262B]/60 text-xs text-[#71717A]">
         <p>Создано в <span className="text-[#D8B4B0] font-semibold">Leor Secret Circle</span></p>
       </div>
+
+      {/* CTA Modal for Guests */}
+      {actionModal && (
+        <PublicWishActionModal
+          isOpen={true}
+          onClose={() => setActionModal(null)}
+          wishTitle={actionModal.wish.title}
+          ownerName={ownerName}
+          actionType={actionModal.type}
+        />
+      )}
     </div>
   );
 }
